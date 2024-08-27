@@ -1,15 +1,40 @@
-import { Box } from '@mui/material';
 import React, { useState } from 'react';
+import { Box } from '@mui/material';
 
 import Menu from './menu/menu';
-import TextInput from './input/textInput';
+import TaskDialog from './dialog/dialog';
 import AddTaskButton from './input/addTask';
-import ToDoIcon from './tasksManagement/todoIcon';
+import ToDoIcon from './icons/todoIcon';
+import SearchTaskFilter from './search/searchFilter';
 import TaskRepresentation from './tasksManagement/taskRepresentation';
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleSaveTask = ({ taskName, subject, priority, executionDate }) => {
+    setTasks((prev) => 
+      [...prev,
+        { 
+          text: taskName,
+          subject: subject,
+          priority: priority,
+          executionDate: executionDate,
+          completed: false,
+          canShow: true 
+        }
+      ]);
+  };
 
   const removeTask = (index) => {
     setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
@@ -53,32 +78,43 @@ const App = () => {
     );
   }
 
+  const filteredTasks = tasks.filter((task) =>
+    task.taskName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <ToDoIcon />
+      <SearchTaskFilter
+        value={inputValue}
+        setInputValue={setInputValue}
+        searchQuery={""}
+        handleSearchChange={""} 
+      />
       <Box display="flex" alignItems="center">
-        <TextInput 
-          placeholder="Add a new task (Bases secure, villages secure etc...)"
-          value={inputValue}
-          setInputValue={setInputValue}
-        />
         <AddTaskButton
-         setTasks={setTasks}
-         value={inputValue}
-         setInputValue={setInputValue}
+         onClick={handleOpenDialog}
         />
       </Box>
-      <br></br>
-      <TaskRepresentation
-        tasks={tasks}
-        onRemoveTask={removeTask} 
-        markAsCompleted={markAsCompleted}
-      />
-      <Menu 
-        showAllTasks={showAllTasks}
-        removeCompletedTasks={removeAllCompletedTasksFromTasksList}
-        hideCompleted={hideCompletedTasksFromList}
-      />
+      <Box>
+        <TaskDialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          onSave={handleSaveTask}
+        />
+      </Box>
+      <Box>
+        <TaskRepresentation
+          tasks={filteredTasks}
+          onRemoveTask={removeTask} 
+          markAsCompleted={markAsCompleted}
+        />
+        <Menu 
+          showAllTasks={showAllTasks}
+          removeCompletedTasks={removeAllCompletedTasksFromTasksList}
+          hideCompleted={hideCompletedTasksFromList}
+        />
+      </Box>
     </>
   );
 }
