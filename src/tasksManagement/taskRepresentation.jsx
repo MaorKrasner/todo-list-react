@@ -1,5 +1,6 @@
-import { Box, ListItem, IconButton } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
+import { Box, ListItem, IconButton } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted }) => {
@@ -13,6 +14,7 @@ const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted }) => {
                     <ListItem
                         sx={{
                             width: "1050px",
+                            marginTop: "10px",
                             marginBottom: '10px',
                             marginLeft: '10px',
                             cursor: 'pointer',
@@ -20,13 +22,13 @@ const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted }) => {
                             color: task.completed ? '#999' : 'black',
                             backgroundColor: "white",
                             display: shouldBeDisplayed(task.canShow),
-                            justifyContent: 'space-between', // space between text and icons
+                            justifyContent: 'space-between',
                             alignItems: 'center'
                         }}
                         component="span"
                     >
                         <Box component="span">
-                            {task.text}
+                            DESCRIPTION: {task.text}, SUBJECT: {task.subject}, PRIORITY: {task.priority}, DATE: {task.executionDate}
                         </Box>
 
                         <Box>
@@ -36,6 +38,14 @@ const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted }) => {
                                 onClick={() => markAsCompleted(index)}
                             >
                                 <CheckIcon color="success" />
+                            </IconButton>
+
+                            <IconButton
+                                aria-label="edit" 
+                                size="large"
+                                // onClick={}
+                            >
+                                <EditIcon style={{color: "#1976D2"}}/>
                             </IconButton>
 
                             <IconButton
