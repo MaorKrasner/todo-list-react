@@ -1,15 +1,10 @@
 import { Button } from "@mui/material";
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
-const AddTaskButton = ({ setTasks, value, setInputValue }) => {
-    const addHandleClick = () => {
-        setTasks((prev) => [...prev, { text: value, completed: false, canShow: true }])
-        setInputValue("");
-    };
-
+const AddTaskButton = ({ onClick }) => {
     return (
         <Button
-            onClick={addHandleClick}
+            onClick={onClick}
             variant="outlined" startIcon={<PlaylistAddIcon />}
             style={{
                 backgroundColor: "#E0E0E0",
@@ -22,7 +17,7 @@ const AddTaskButton = ({ setTasks, value, setInputValue }) => {
                 marginLeft: "10px",
                 marginTop: "20px",
                 height: "40px",
-                textTransform: 'none'
+                textTransform: 'none',
             }}
             sx={{
                 '&:hover': {
