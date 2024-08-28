@@ -14,11 +14,12 @@ import {
   OutlinedInput
 } from '@mui/material';
 
-const TaskDialog = ({ open, onClose, onSave }) => {
+const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState('');
   const [subject, setSubject] = useState('');
   const [priority, setPriority] = useState(5);
   const [executionDate, setExecutionDate] = useState('');
+  const [taskIndex, setTaskIndex] = useState(0);
 
   const subjects = [
     'Transfer of weapons',
@@ -28,7 +29,8 @@ const TaskDialog = ({ open, onClose, onSave }) => {
   ];
 
   const handleSave = () => {
-    onSave({ taskName, subject, priority, executionDate });
+    onSave({ taskName, subject, priority, executionDate, taskIndex });
+    setTaskIndex((prev) => prev + 1);
     onClose();
   };
 
@@ -38,6 +40,7 @@ const TaskDialog = ({ open, onClose, onSave }) => {
 
       <DialogContent>
         <TextField
+          defaultValue={taskToEdit ? taskToEdit.text : ""}
           margin="dense"
           label="Task Name"
           fullWidth

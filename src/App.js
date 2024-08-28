@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 
-import Menu from './menu/menu';
-import TaskDialog from './dialog/dialog';
-import AddTaskButton from './input/addTask';
-import ToDoIcon from './icons/todoIcon';
-import SearchTaskFilter from './search/searchFilter';
-import TaskRepresentation from './tasksManagement/taskRepresentation';
+import Menu from './components/menu/menu';
+import TaskDialog from './components/dialog/dialog';
+import AddTaskButton from './components/input/addTask';
+import ToDoIcon from './components/icons/todoIcon';
+import SearchTaskFilter from './components/search/searchFilter';
+import TaskRepresentation from './components/tasksManagement/taskRepresentation';
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
-  const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [taskToEdit, setTaskToEdit] = useState({});
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -22,10 +22,15 @@ const App = () => {
     setDialogOpen(false);
   };
 
-  const handleSaveTask = ({ taskName, subject, priority, executionDate }) => {
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSaveTask = ({ taskName, subject, priority, executionDate, taskIndex }) => {
     setTasks((prev) => 
       [...prev,
         { 
+          taskIndex: taskIndex,
           text: taskName,
           subject: subject,
           priority: priority,
@@ -36,20 +41,16 @@ const App = () => {
       ]);
   };
 
+  const handleSaveEdit = (taskIndex, { text, subject, priority, executionDate }) => {
+    const currentTask = tasks.filter((task) => task.taskIndex === taskToEdit.taskIndex);
+    setTaskToEdit(currentTask);
+  }
+
   const removeTask = (index) => {
     setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
   };
 
   const markAsCompleted = (index) => {
-    /*
-     * Explanation why completed and canShow are the opposite values of !task.completed :
-     * A task cannot be completed and shown (true & true) or not completed and not shown (false & false).
-     * So, whenever the task is completed, it cannot be shown (true & false) or, when the task is
-     * not completed, it can be shown (false & true) and that is why completed and canShow cannot
-     * have the same boolean value.
-     * And that is why completed set to it's opposite (!task.completed) and canShow is set to the
-     * value of task.completed (before the value changes of course).
-     */
     setTasks(prevTasks =>
       prevTasks.map((task, i) =>
         i === index ? { ...task, completed: !task.completed, canShow: task.completed } : task
@@ -78,18 +79,17 @@ const App = () => {
     );
   }
 
-  const filteredTasks = tasks.filter((task) =>
-    task.taskName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTasks = tasks.filter((task) => 
+    task.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
 
   return (
     <>
       <ToDoIcon />
       <SearchTaskFilter
-        value={inputValue}
-        setInputValue={setInputValue}
-        searchQuery={""}
-        handleSearchChange={""} 
+        handleChange={handleSearchChange}
+        searchQuery={searchQuery}
       />
       <Box display="flex" alignItems="center">
         <AddTaskButton
@@ -98,6 +98,7 @@ const App = () => {
       </Box>
       <Box>
         <TaskDialog
+          taskToEdit={taskToEdit}
           open={dialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
@@ -108,6 +109,7 @@ const App = () => {
           tasks={filteredTasks}
           onRemoveTask={removeTask} 
           markAsCompleted={markAsCompleted}
+          handleEdit={handleSaveEdit}
         />
         <Menu 
           showAllTasks={showAllTasks}
