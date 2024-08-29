@@ -3,8 +3,24 @@ import CheckIcon from '@mui/icons-material/Check';
 import { Box, ListItem, IconButton } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted, handleEdit }) => {
+const TaskRepresentation = (
+    { 
+        tasks,
+        onRemoveTask,
+        markAsCompleted,
+        handleEdit,
+        openDialog,
+        closeDialog 
+    }
+) => {
     const shouldBeDisplayed = (canShow) => canShow ? 'flex' : 'none';
+
+    const editFunction = (taskIndex, completed) => {
+        if (!completed) {
+            handleEdit(taskIndex);
+            openDialog();
+        }
+    };
 
     return (
         tasks
@@ -28,7 +44,7 @@ const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted, handleEdit }
                         component="span"
                     >
                         <Box component="span">
-                            {index + 1}. DESCRIPTION: {task.text}, SUBJECT: {task.subject}, PRIORITY: {task.priority}, DATE: {task.executionDate}
+                            {task.taskIndex + 1}. DESCRIPTION: {task.text}, SUBJECT: {task.subject}, PRIORITY: {task.priority}, DATE: {task.executionDate}
                         </Box>
 
                         <Box>
@@ -43,7 +59,7 @@ const TaskRepresentation = ({ tasks, onRemoveTask, markAsCompleted, handleEdit }
                             <IconButton
                                 aria-label="edit" 
                                 size="large"
-                                onClick={handleEdit}
+                                onClick={() => editFunction(index, task.completed)}
                             >
                                 <EditIcon style={{color: "#1976D2"}}/>
                             </IconButton>

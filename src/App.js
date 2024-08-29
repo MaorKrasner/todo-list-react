@@ -27,7 +27,8 @@ const App = () => {
   };
 
   const handleSaveTask = ({ taskName, subject, priority, executionDate, taskIndex }) => {
-    setTasks((prev) => 
+    if (JSON.stringify(taskToEdit) === JSON.stringify({})) {
+      setTasks((prev) => 
       [...prev,
         { 
           taskIndex: taskIndex,
@@ -39,11 +40,30 @@ const App = () => {
           canShow: true 
         }
       ]);
+
+      return;
+    }
+
+    setTasks(prevTasks => 
+      prevTasks.map((task) => 
+        task.taskIndex === taskToEdit.taskIndex 
+          ? 
+          {
+            ...task,
+            text: taskName,
+            subject: subject,
+            priority: priority,
+            executionDate: executionDate, 
+          }
+          : task
+      )
+    );
+
+    setTaskToEdit({});
   };
 
-  const handleSaveEdit = (taskIndex, { text, subject, priority, executionDate }) => {
-    const currentTask = tasks.filter((task) => task.taskIndex === taskToEdit.taskIndex);
-    setTaskToEdit(currentTask);
+  const handleSaveEdit = (taskIndex) => {
+    setTaskToEdit(tasks[Number(+taskIndex)]);
   }
 
   const removeTask = (index) => {
@@ -110,6 +130,8 @@ const App = () => {
           onRemoveTask={removeTask} 
           markAsCompleted={markAsCompleted}
           handleEdit={handleSaveEdit}
+          openDialog={handleOpenDialog}
+          closeDialog={handleCloseDialog}
         />
         <Menu 
           showAllTasks={showAllTasks}
