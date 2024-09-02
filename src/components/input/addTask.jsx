@@ -6,7 +6,7 @@ const AddTaskButton = ({ onClick }) => {
         <Button
             onClick={onClick}
             variant="outlined" startIcon={<PlaylistAddIcon />}
-            style={{
+            sx={{
                 backgroundColor: "#E0E0E0",
                 color: "green",
                 border: "none",
@@ -18,8 +18,6 @@ const AddTaskButton = ({ onClick }) => {
                 marginTop: "20px",
                 height: "40px",
                 textTransform: 'none',
-            }}
-            sx={{
                 '&:hover': {
                     backgroundColor: "green",
                     color: "white"  

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
+import _ from 'loadsh';
 
 import Menu from './components/menu/menu';
 import TaskDialog from './components/dialog/dialog';
@@ -10,40 +11,38 @@ import TaskRepresentation from './components/tasksManagement/taskRepresentation'
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [taskToEdit, setTaskToEdit] = useState({});
 
   const handleOpenDialog = () => {
-    setDialogOpen(true);
+    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
-    setDialogOpen(false);
+    setIsDialogOpen(false);
   };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const handleSaveTask = ({ taskName, subject, priority, executionDate, taskIndex }) => {
-    if (JSON.stringify(taskToEdit) === JSON.stringify({})) {
-      setTasks((prev) => 
+  const handleNewTaskInsertion = (taskName, subject, priority, executionDate, taskIndex) => {
+    setTasks((prev) => 
       [...prev,
         { 
-          taskIndex: taskIndex,
+          taskIndex,
           text: taskName,
-          subject: subject,
-          priority: priority,
-          executionDate: executionDate,
+          subject,
+          priority,
+          executionDate,
           completed: false,
           canShow: true 
         }
       ]);
+  };
 
-      return;
-    }
-
+  const handleTaskSaving = (taskName, subject, priority, executionDate) => {
     setTasks(prevTasks => 
       prevTasks.map((task) => 
         task.taskIndex === taskToEdit.taskIndex 
@@ -60,6 +59,12 @@ const App = () => {
     );
 
     setTaskToEdit({});
+  };
+
+  const handleSaveTask = (taskName, subject, priority, executionDate, taskIndex) => {
+    _.isEmpty(taskToEdit) 
+      ? handleNewTaskInsertion(taskName, subject, priority, executionDate, taskIndex) 
+      : handleTaskSaving(taskName, subject, priority, executionDate);
   };
 
   const handleSaveEdit = (taskIndex) => {
@@ -119,7 +124,7 @@ const App = () => {
       <Box>
         <TaskDialog
           taskToEdit={taskToEdit}
-          open={dialogOpen}
+          open={isDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
         />

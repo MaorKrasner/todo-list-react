@@ -14,6 +14,10 @@ import {
   OutlinedInput
 } from '@mui/material';
 
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState('');
   const [subject, setSubject] = useState('');
@@ -29,7 +33,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   ];
 
   const handleSave = () => {
-    onSave({ taskName, subject, priority, executionDate, taskIndex });
+    onSave(taskName, subject, priority, executionDate, taskIndex);
     setTaskIndex((prev) => prev + 1);
     onClose();
   };
@@ -54,7 +58,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           sx={{
             backgroundColor: 'white',
             padding: '0 2px',
-            transform: 'translate(14px, -6px) scale(0.75)', // Ensures the label stays above without intersecting the border
+            transform: 'translate(14px, -6px) scale(0.75)',
           }}
           > 
             Subject
@@ -72,6 +76,26 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
             ))}
           </Select>
         </FormControl>
+
+          {/*
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label="Execution Date"
+              value={executionDate}
+              onChange={(newValue) => setExecutionDate(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  type='date' 
+                  {...params} 
+                  fullWidth 
+                  margin="dense" 
+                  variant="outlined" 
+                />
+              )}
+            />
+        </LocalizationProvider> 
+           */}
+
 
         <TextField
           label="Execution Date (YYYY-MM-DD)"

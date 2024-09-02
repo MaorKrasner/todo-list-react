@@ -19,7 +19,7 @@ const TextInput = ({ placeholder, value, setInputValue }) => {
                 borderRadius: "4px",
                 width: "1050px", 
                 height: "45px",
-                boxSizing: "border-box" ,// Ensures padding and border are included in width
+                boxSizing: "border-box",
                 marginTop: "20px",
                 marginLeft: "10px"
             }}
