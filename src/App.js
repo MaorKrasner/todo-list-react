@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { Box } from '@mui/material';
 import _ from 'loadsh';
+import { Box } from '@mui/material';
+import React, { useState, useContext } from 'react';
 
 import Menu from './components/menu/menu';
+import ToDoIcon from './components/icons/todoIcon';
 import TaskDialog from './components/dialog/dialog';
 import AddTaskButton from './components/input/addTask';
-import ToDoIcon from './components/icons/todoIcon';
 import SearchTaskFilter from './components/search/searchFilter';
 import TaskRepresentation from './components/tasksManagement/taskRepresentation';
+import { SearchContext, SearchProvider } from './components/search/searchContext';
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [taskToEdit, setTaskToEdit] = useState({});
+
+  const { searchQuery } = useContext(SearchContext);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -21,10 +23,6 @@ const App = () => {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
   };
 
   const handleNewTaskInsertion = (taskName, subject, priority, executionDate, taskIndex) => {
@@ -104,18 +102,15 @@ const App = () => {
     );
   }
 
-  const filteredTasks = tasks.filter((task) => 
+  const filteredTasks = tasks.filter((task) =>
     task.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
 
   return (
-    <>
+    <SearchProvider>
       <ToDoIcon />
-      <SearchTaskFilter
-        handleChange={handleSearchChange}
-        searchQuery={searchQuery}
-      />
+      <SearchTaskFilter />
       <Box display="flex" alignItems="center">
         <AddTaskButton
          onClick={handleOpenDialog}
@@ -144,7 +139,7 @@ const App = () => {
           hideCompleted={hideCompletedTasksFromList}
         />
       </Box>
-    </>
+    </SearchProvider>
   );
 }
 

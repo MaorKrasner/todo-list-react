@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TextField } from '@mui/material';
 
-const SearchTaskFilter = ({ handleChange, searchQuery }) => {
+import { SearchContext } from './searchContext';
+
+const SearchTaskFilter = () => {
+    const { searchQuery, setSearchQuery } = useContext(SearchContext);
+
+    const handleChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
     return (
         <TextField
             variant="outlined"
@@ -20,15 +28,15 @@ const SearchTaskFilter = ({ handleChange, searchQuery }) => {
                 },
             }}
             sx={{
-                width: "80%", // Responsive width
+                width: "80%",
                 marginTop: "20px",
                 marginLeft: "10px",
                 '& .MuiOutlinedInput-root': {
                     '&:hover fieldset': {
-                        borderColor: '#888', // Hover effect
+                        borderColor: '#888',
                     },
                     '&.Mui-focused fieldset': {
-                        borderColor: '#555', // Focus effect
+                        borderColor: '#555',
                         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                     },
                 },

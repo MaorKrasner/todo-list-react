@@ -1,6 +1,6 @@
-import ShowAllTasks from "./showAll";
-import HideCompletedTasks from "./hideCompleted";
-import DeleteCompletedTasks from "./deleteCompleted";
+import ShowAllTasks from "./menuButtons/showAll";
+import HideCompletedTasks from "./menuButtons/hideCompleted";
+import DeleteCompletedTasks from "./menuButtons/deleteCompleted";
 
 const Menu = ({ showAllTasks, removeCompletedTasks, hideCompleted }) => {
     return (
