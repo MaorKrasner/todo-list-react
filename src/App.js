@@ -1,21 +1,19 @@
 import _ from 'loadsh';
 import { Box } from '@mui/material';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Menu from './components/menu/menu';
 import ToDoIcon from './components/icons/todoIcon';
 import TaskDialog from './components/dialog/dialog';
+import { TasksContext } from './contexts/tasksContext';
 import AddTaskButton from './components/input/addTask';
 import SearchTaskFilter from './components/search/searchFilter';
 import TaskRepresentation from './components/tasksManagement/taskRepresentation';
-import { SearchContext, SearchProvider } from './components/search/searchContext';
 
 const App = () => {
-  const [tasks, setTasks] = useState([]);
+  const { tasks, setTasks } = useContext(TasksContext);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState({});
-
-  const { searchQuery } = useContext(SearchContext);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -24,6 +22,10 @@ const App = () => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
+  const handleSaveEdit = (taskIndex) => {
+    setTaskToEdit(tasks[Number(+taskIndex)]);
+  }
 
   const handleNewTaskInsertion = (taskName, subject, priority, executionDate, taskIndex) => {
     setTasks((prev) => 
@@ -65,50 +67,8 @@ const App = () => {
       : handleTaskSaving(taskName, subject, priority, executionDate);
   };
 
-  const handleSaveEdit = (taskIndex) => {
-    setTaskToEdit(tasks[Number(+taskIndex)]);
-  }
-
-  const removeTask = (index) => {
-    setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
-  };
-
-  const markAsCompleted = (index) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task, i) =>
-        i === index ? { ...task, completed: !task.completed, canShow: task.completed } : task
-      )
-    );
-  }
-
-  const showAllTasks = () => {
-    setTasks(prevTasks => 
-      prevTasks.map((task) => task = {...task, canShow: true})
-    );
-  }
-
-  const hideCompletedTasksFromList = () => {
-    setTasks(prevTasks =>
-      prevTasks
-        .map((task) =>
-          task.completed ? {...task, canShow: false} : task
-        )
-    );
-  }
-
-  const removeAllCompletedTasksFromTasksList = () => {
-    setTasks(prevTasks => 
-      prevTasks.filter((task) => task.completed === false)
-    );
-  }
-
-  const filteredTasks = tasks.filter((task) =>
-    task.text.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
-
   return (
-    <SearchProvider>
+    <>
       <ToDoIcon />
       <SearchTaskFilter />
       <Box display="flex" alignItems="center">
@@ -126,20 +86,12 @@ const App = () => {
       </Box>
       <Box>
         <TaskRepresentation
-          tasks={filteredTasks}
-          onRemoveTask={removeTask} 
-          markAsCompleted={markAsCompleted}
           handleEdit={handleSaveEdit}
           openDialog={handleOpenDialog}
-          closeDialog={handleCloseDialog}
         />
-        <Menu 
-          showAllTasks={showAllTasks}
-          removeCompletedTasks={removeAllCompletedTasksFromTasksList}
-          hideCompleted={hideCompletedTasksFromList}
-        />
+        <Menu />
       </Box>
-    </SearchProvider>
+    </>
   );
 }
 

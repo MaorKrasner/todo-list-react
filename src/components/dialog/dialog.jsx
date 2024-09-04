@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import {
+  Button,
   Dialog,
+  Select,
+  Slider,
+  MenuItem,
+  TextField,
+  InputLabel,
+  FormControl,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Slider,
   OutlinedInput
 } from '@mui/material';
-
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState('');

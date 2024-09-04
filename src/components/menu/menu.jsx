@@ -2,13 +2,13 @@ import ShowAllTasks from "./menuButtons/showAll";
 import HideCompletedTasks from "./menuButtons/hideCompleted";
 import DeleteCompletedTasks from "./menuButtons/deleteCompleted";
 
-const Menu = ({ showAllTasks, removeCompletedTasks, hideCompleted }) => {
+const Menu = () => {
     return (
-    <>
-      <HideCompletedTasks hideCompleted={hideCompleted} />
-      <DeleteCompletedTasks removeCompletedTasks={removeCompletedTasks} />
-      <ShowAllTasks showAllTasks={showAllTasks} />
-    </>
+      <>
+        <HideCompletedTasks />
+        <DeleteCompletedTasks />
+        <ShowAllTasks />
+      </>
     );
 }
 

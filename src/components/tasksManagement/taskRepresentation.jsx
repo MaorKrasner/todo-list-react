@@ -1,18 +1,32 @@
+import { useContext } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import { Box, ListItem, IconButton } from "@mui/material";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-const TaskRepresentation = (
-    { 
-        tasks,
-        onRemoveTask,
-        markAsCompleted,
-        handleEdit,
-        openDialog,
-        closeDialog 
+import { TasksContext } from '../../contexts/tasksContext';
+import { SearchContext } from '../../contexts/searchContext';
+
+const TaskRepresentation = ({ handleEdit, openDialog }) => {
+    const { tasks, setTasks } = useContext(TasksContext);
+    const { searchQuery } = useContext(SearchContext);
+
+    const filteredTasks = tasks.filter((task) =>
+        task.text.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const removeTask = (index) => {
+        setTasks(prevTasks => prevTasks.filter((_, i) => i !== index));
+    };
+
+    const markAsCompleted = (index) => {
+      setTasks(prevTasks =>
+        prevTasks.map((task, i) =>
+          i === index ? { ...task, completed: !task.completed, canShow: task.completed } : task
+        )
+      );
     }
-) => {
+
     const shouldBeDisplayed = (canShow) => canShow ? 'flex' : 'none';
 
     const editFunction = (taskIndex, completed) => {
@@ -23,7 +37,7 @@ const TaskRepresentation = (
     };
 
     return (
-        tasks
+        filteredTasks
             .filter(task => task.canShow)
             .map((task, index) => (
                 <Box key={index}>
@@ -67,7 +81,7 @@ const TaskRepresentation = (
                             <IconButton
                                 aria-label="delete" 
                                 size="large"
-                                onClick={() => onRemoveTask(index)}
+                                onClick={() => removeTask(index)}
                             >
                                 <RemoveCircleOutlineIcon color="error" />
                             </IconButton>

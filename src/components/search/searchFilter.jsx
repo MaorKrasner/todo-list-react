@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { TextField } from '@mui/material';
 
-import { SearchContext } from './searchContext';
+import { SearchContext } from '../../contexts/searchContext';
 
 const SearchTaskFilter = () => {
     const { searchQuery, setSearchQuery } = useContext(SearchContext);
