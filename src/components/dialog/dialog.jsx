@@ -73,26 +73,6 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           </Select>
         </FormControl>
 
-          {/*
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              label="Execution Date"
-              value={executionDate}
-              onChange={(newValue) => setExecutionDate(newValue)}
-              renderInput={(params) => (
-                <TextField
-                  type='date' 
-                  {...params} 
-                  fullWidth 
-                  margin="dense" 
-                  variant="outlined" 
-                />
-              )}
-            />
-        </LocalizationProvider> 
-           */}
-
-
         <TextField
           label="Execution Date (YYYY-MM-DD)"
           type="date"
