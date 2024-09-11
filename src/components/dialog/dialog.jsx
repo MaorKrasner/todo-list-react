@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import enGB from "date-fns/locale/en-GB";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
   Button,
   Dialog,
@@ -11,21 +15,21 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  OutlinedInput
-} from '@mui/material';
+  OutlinedInput,
+} from "@mui/material";
 
 const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
-  const [taskName, setTaskName] = useState('');
-  const [subject, setSubject] = useState('');
+  const [taskName, setTaskName] = useState("");
+  const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
-  const [executionDate, setExecutionDate] = useState('');
+  const [executionDate, setExecutionDate] = useState(null);
   const [taskIndex, setTaskIndex] = useState(0);
 
   const subjects = [
-    'Transfer of weapons',
-    'Intelligence gathering operation',
-    'Locate a new site',
-    'Activity routine characterization'
+    "Transfer of weapons",
+    "Intelligence gathering operation",
+    "Locate a new site",
+    "Activity routine characterization",
   ];
 
   const handleSave = () => {
@@ -50,13 +54,13 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
 
         <FormControl variant="outlined" fullWidth margin="dense">
           <InputLabel
-          htmlFor="subject-select"
-          sx={{
-            backgroundColor: 'white',
-            padding: '0 2px',
-            transform: 'translate(14px, -6px) scale(0.75)',
-          }}
-          > 
+            htmlFor="subject-select"
+            sx={{
+              backgroundColor: "white",
+              padding: "0 2px",
+              transform: "translate(14px, -6px) scale(0.75)",
+            }}
+          >
             Subject
           </InputLabel>
           <Select
@@ -73,7 +77,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           </Select>
         </FormControl>
 
-        <TextField
+        {/* <TextField
           label="Execution Date (YYYY-MM-DD)"
           type="date"
           value={executionDate}
@@ -84,7 +88,40 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
             shrink: true,
           }}
           variant="outlined"
-        />
+        /> */}
+
+        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Execution Date"
+            value={executionDate}
+            onChange={(newDate) => setExecutionDate(newDate)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                margin="dense"
+                variant="outlined"
+              />
+            )}
+          />
+        </LocalizationProvider> */}
+
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={enGB}>
+          <DatePicker
+            label="Execution Date"
+            value={executionDate}
+            onChange={(newValue) => setExecutionDate(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                margin="dense"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }} // Ensures the label does not overlap with the text field
+              />
+            )}
+          />
+        </LocalizationProvider>
 
         <FormControl fullWidth margin="dense">
           <InputLabel shrink>Priority</InputLabel>

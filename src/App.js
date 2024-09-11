@@ -1,17 +1,17 @@
-import _ from 'loadsh';
-import { Box } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import _ from "lodash";
+import { Box } from "@mui/material";
+import React, { useState } from "react";
 
-import Menu from './components/menu/menu';
-import ToDoIcon from './components/icons/todoIcon';
-import TaskDialog from './components/dialog/dialog';
-import { TasksContext } from './contexts/tasksContext';
-import AddTaskButton from './components/input/addTask';
-import SearchTaskFilter from './components/search/searchFilter';
-import TaskRepresentation from './components/tasksManagement/taskRepresentation';
+import Menu from "./components/menu/menu";
+import ToDoIcon from "./components/icons/todoIcon";
+import TaskDialog from "./components/dialog/dialog";
+import { useTasks } from "./contexts/tasksContext";
+import AddTaskButton from "./components/input/addTask";
+import SearchTaskFilter from "./components/search/searchFilter";
+import TaskRepresentation from "./components/tasksManagement/taskRepresentation";
 
 const App = () => {
-  const { tasks, setTasks } = useContext(TasksContext);
+  const { tasks, setTasks } = useTasks();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState({});
 
@@ -25,35 +25,42 @@ const App = () => {
 
   const handleSaveEdit = (taskIndex) => {
     setTaskToEdit(tasks[Number(+taskIndex)]);
-  }
+  };
 
-  const handleNewTaskInsertion = (taskName, subject, priority, executionDate, taskIndex) => {
-    setTasks((prev) => 
-      [...prev,
-        { 
-          taskIndex,
-          text: taskName,
-          subject,
-          priority,
-          executionDate,
-          completed: false,
-          canShow: true 
-        }
-      ]);
+  const handleNewTaskInsertion = (
+    taskName,
+    subject,
+    priority,
+    executionDate,
+    taskIndex
+  ) => {
+    const stringedDate = executionDate.toLocaleDateString("en-GB");
+    setTasks((prev) => [
+      ...prev,
+      {
+        taskIndex,
+        text: taskName,
+        subject,
+        priority,
+        executionDate: stringedDate,
+        completed: false,
+        canShow: true,
+      },
+    ]);
   };
 
   const handleTaskSaving = (taskName, subject, priority, executionDate) => {
-    setTasks(prevTasks => 
-      prevTasks.map((task) => 
-        task.taskIndex === taskToEdit.taskIndex 
-          ? 
-          {
-            ...task,
-            text: taskName,
-            subject: subject,
-            priority: priority,
-            executionDate: executionDate, 
-          }
+    const stringedDate = executionDate.toLocaleDateString("en-GB");
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.taskIndex === taskToEdit.taskIndex
+          ? {
+              ...task,
+              text: taskName,
+              subject: subject,
+              priority: priority,
+              executionDate: stringedDate,
+            }
           : task
       )
     );
@@ -61,9 +68,21 @@ const App = () => {
     setTaskToEdit({});
   };
 
-  const handleSaveTask = (taskName, subject, priority, executionDate, taskIndex) => {
-    _.isEmpty(taskToEdit) 
-      ? handleNewTaskInsertion(taskName, subject, priority, executionDate, taskIndex) 
+  const handleSaveTask = (
+    taskName,
+    subject,
+    priority,
+    executionDate,
+    taskIndex
+  ) => {
+    _.isEmpty(taskToEdit)
+      ? handleNewTaskInsertion(
+          taskName,
+          subject,
+          priority,
+          executionDate,
+          taskIndex
+        )
       : handleTaskSaving(taskName, subject, priority, executionDate);
   };
 
@@ -72,9 +91,7 @@ const App = () => {
       <ToDoIcon />
       <SearchTaskFilter />
       <Box display="flex" alignItems="center">
-        <AddTaskButton
-         onClick={handleOpenDialog}
-        />
+        <AddTaskButton onClick={handleOpenDialog} />
       </Box>
       <Box>
         <TaskDialog
@@ -93,6 +110,6 @@ const App = () => {
       </Box>
     </>
   );
-}
+};
 
 export default App;

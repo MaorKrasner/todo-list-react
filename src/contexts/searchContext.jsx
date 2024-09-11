@@ -1,13 +1,11 @@
-import React, { createContext, useState } from 'react';
+import { atom, useAtom } from "jotai";
 
-export const SearchContext = createContext();
+const searchAtom = atom("");
 
-export const SearchProvider = ({ children }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-
-  return (
-    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      {children}
-    </SearchContext.Provider>
-  );
+export const useSearch = () => {
+  const [searchQuery, setSearchQuery] = useAtom(searchAtom);
+  return {
+    searchQuery,
+    setSearchQuery,
+  };
 };

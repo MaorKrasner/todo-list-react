@@ -1,13 +1,11 @@
-import React, { createContext, useState } from 'react';
+import { atom, useAtom } from "jotai";
 
-export const TasksContext = createContext();
+const tasksAtom = atom([]);
 
-export const TasksProvider = ({ children }) => {
-    const [tasks, setTasks] = useState([]);
-
-    return (
-        <TasksContext.Provider value={{ tasks, setTasks }}>
-            {children}
-        </TasksContext.Provider>
-    );
+export const useTasks = () => {
+  const [tasks, setTasks] = useAtom(tasksAtom);
+  return {
+    tasks,
+    setTasks,
+  };
 };

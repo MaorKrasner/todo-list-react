@@ -1,21 +1,21 @@
-import React, { useContext } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import { TasksContext } from '../../../contexts/tasksContext';
-import { DeleteCompletedTasksButton } from '../buttonsStyles/buttonsStyle';
+import { useTasks } from "../../../contexts/tasksContext";
+import { DeleteCompletedTasksButton } from "../buttonsStyles/buttonsStyle";
 
 const DeleteCompletedTasks = () => {
-  const { setTasks } = useContext(TasksContext);
+  const { setTasks } = useTasks();
 
   const deleteAllCompletedTasksFromTasksList = () => {
-    setTasks(prevTasks => 
+    setTasks((prevTasks) =>
       prevTasks.filter((task) => task.completed === false)
     );
-  }
+  };
 
   return (
-    <DeleteCompletedTasksButton 
-      variant="outlined" 
+    <DeleteCompletedTasksButton
+      variant="outlined"
       startIcon={<DeleteIcon />}
       onClick={() => deleteAllCompletedTasksFromTasksList()}
     >
