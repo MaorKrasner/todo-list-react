@@ -1,8 +1,8 @@
 import React from "react";
 import HideSourceIcon from "@mui/icons-material/HideSource";
 
-import { useTasks } from "../../../contexts/tasksContext";
-import { HideCompletedTasksButton } from "../buttonsStyles/buttonsStyle";
+import { useTasks } from "contexts/tasksContext";
+import { HideCompletedTasksButton } from "components/menu/buttonsStyles/buttonsStyle";
 
 const HideCompletedTasks = () => {
   const { setTasks } = useTasks();
@@ -16,13 +16,25 @@ const HideCompletedTasks = () => {
   };
 
   return (
+    // <HideCompletedTasksButton
+    //   text="Hide completed tasks"
+    //   startIcon={<HideSourceIcon />}
+    //   onClick={hideCompletedTasksFromList}
+    // />
+
     <HideCompletedTasksButton
       variant="outlined"
       startIcon={<HideSourceIcon />}
-      onClick={() => hideCompletedTasksFromList()}
+      onClick={hideCompletedTasksFromList}
     >
       Hide completed tasks
     </HideCompletedTasksButton>
+
+    // <HideCompletedTasksButton
+    //   variant="outlined"
+    //   startIcon={<HideSourceIcon />}
+    //   onClick={() => hideCompletedTasksFromList()}
+    // />
   );
 };
 

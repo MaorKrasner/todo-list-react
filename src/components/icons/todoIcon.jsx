@@ -5,10 +5,10 @@ const ToDoIcon = (props) => {
   return (
     <SvgIcon
       {...props}
-      viewBox="0 0 150 80" // Increased height of the viewBox to provide more space
+      viewBox="0 0 150 80"
       style={{
         width: "200px",
-        height: "110px", // Adjusted height to match the new viewBox
+        height: "110px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -23,7 +23,7 @@ const ToDoIcon = (props) => {
       />
       <text
         x="50%"
-        y="78" // Raised y-coordinate to move text higher
+        y="78"
         fontSize="8"
         fontFamily="Arial, sans-serif"
         fill="#333333"

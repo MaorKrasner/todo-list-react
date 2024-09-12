@@ -3,8 +3,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import { Box, ListItem, IconButton } from "@mui/material";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
-import { useTasks } from "../../contexts/tasksContext";
-import { useSearch } from "../../contexts/searchContext";
+import { useTasks } from "contexts/tasksContext";
+import { useSearch } from "contexts/searchContext";
 
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const { tasks, setTasks } = useTasks();
@@ -13,27 +13,39 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
     task.text.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const removeTask = (index) => {
-    setTasks((prevTasks) => prevTasks.filter((_, i) => i !== index));
-  };
-
-  const markAsCompleted = (index) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task, i) =>
-        i === index
-          ? { ...task, completed: !task.completed, canShow: task.completed }
-          : task
-      )
-    );
-  };
-
   const shouldBeDisplayed = (canShow) => (canShow ? "flex" : "none");
 
-  const editFunction = (taskIndex, completed) => {
-    if (!completed) {
-      handleEdit(taskIndex);
-      openDialog();
-    }
+  const getRemoveTask = (index) => {
+    const removeTask = (index) => {
+      setTasks((prevTasks) => prevTasks.filter((_, i) => i !== index));
+    };
+
+    return removeTask;
+  };
+
+  const getEditFunction = (taskIndex, completed) => {
+    const editFunction = () => {
+      if (!completed) {
+        handleEdit(taskIndex);
+        openDialog();
+      }
+    };
+
+    return editFunction;
+  };
+
+  const getMarkAsCompletedFn = (taskIndex) => {
+    const markAsCompleted = () => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task, i) =>
+          i === taskIndex
+            ? { ...task, completed: !task.completed, canShow: task.completed }
+            : task
+        )
+      );
+    };
+
+    return markAsCompleted;
   };
 
   return filteredTasks
@@ -66,7 +78,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
             <IconButton
               aria-label="complete"
               size="large"
-              onClick={() => markAsCompleted(index)}
+              onClick={getMarkAsCompletedFn(index)}
             >
               <CheckIcon color="success" />
             </IconButton>
@@ -74,7 +86,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
             <IconButton
               aria-label="edit"
               size="large"
-              onClick={() => editFunction(index, task.completed)}
+              onClick={getEditFunction(index, task.completed)}
             >
               <EditIcon style={{ color: "#1976D2" }} />
             </IconButton>
@@ -82,7 +94,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
             <IconButton
               aria-label="delete"
               size="large"
-              onClick={() => removeTask(index)}
+              onClick={getRemoveTask(index)}
             >
               <RemoveCircleOutlineIcon color="error" />
             </IconButton>

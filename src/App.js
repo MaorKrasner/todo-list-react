@@ -2,13 +2,13 @@ import _ from "lodash";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
-import Menu from "./components/menu/menu";
-import ToDoIcon from "./components/icons/todoIcon";
-import TaskDialog from "./components/dialog/dialog";
-import { useTasks } from "./contexts/tasksContext";
-import AddTaskButton from "./components/input/addTask";
-import SearchTaskFilter from "./components/search/searchFilter";
-import TaskRepresentation from "./components/tasksManagement/taskRepresentation";
+import Menu from "components/menu/menu";
+import ToDoIcon from "components/icons/todoIcon";
+import TaskDialog from "components/dialog/dialog";
+import { useTasks } from "contexts/tasksContext";
+import AddTaskButton from "components/input/addTask";
+import SearchTaskFilter from "components/search/searchFilter";
+import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
   const { tasks, setTasks } = useTasks();
