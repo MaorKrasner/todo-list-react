@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import enGB from "date-fns/locale/en-GB";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
   Button,
@@ -31,6 +31,13 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
     "Locate a new site",
     "Activity routine characterization",
   ];
+
+  const areAllPropertiesFilled = !(
+    taskName &&
+    subject &&
+    priority &&
+    executionDate
+  );
 
   const handleSave = () => {
     onSave(taskName, subject, priority, executionDate, taskIndex);
@@ -70,8 +77,28 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
             label="Subject"
           >
             {subjects.map((subject) => (
-              <MenuItem key={subject} value={subject}>
-                {subject}
+              <MenuItem
+                key={subject}
+                value={subject}
+                sx={{
+                  padding: "4px 16px",
+                  minHeight: "30px",
+                  textAlign: "left",
+                }}
+                style={{
+                  display: "block",
+                  textAlign: "left",
+                }}
+              >
+                <span
+                  style={{
+                    textAlign: "left",
+                    width: "100%",
+                    paddingLeft: "8px",
+                  }}
+                >
+                  {subject}
+                </span>{" "}
               </MenuItem>
             ))}
           </Select>
@@ -88,7 +115,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
                 fullWidth
                 margin="dense"
                 variant="outlined"
-                InputLabelProps={{ shrink: true }} // Ensures the label does not overlap with the text field
+                InputLabelProps={{ shrink: true }}
               />
             )}
           />
@@ -112,7 +139,11 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary">
+        <Button
+          onClick={handleSave}
+          color="primary"
+          disabled={areAllPropertiesFilled}
+        >
           Save
         </Button>
       </DialogActions>

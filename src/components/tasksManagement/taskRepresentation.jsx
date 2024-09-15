@@ -1,10 +1,37 @@
-import EditIcon from "@mui/icons-material/Edit";
-import CheckIcon from "@mui/icons-material/Check";
-import { Box, ListItem, IconButton } from "@mui/material";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import React from "react";
+import EditIcon from "@material-ui/icons/Edit";
+import CheckIcon from "@material-ui/icons/Check";
+import { makeStyles } from "@material-ui/core/styles";
+import { ListItem, IconButton } from "@material-ui/core";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 import { useTasks } from "contexts/tasksContext";
 import { useSearch } from "contexts/searchContext";
+
+const useStyles = makeStyles({
+  listItem: {
+    width: "1050px",
+    marginTop: "10px",
+    marginBottom: "10px",
+    marginLeft: "10px",
+    cursor: "pointer",
+    backgroundColor: "white",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    "&.completed": {
+      textDecoration: "line-through",
+      color: "#999",
+    },
+    "&.active": {
+      textDecoration: "none",
+      color: "black",
+    },
+  },
+  iconButton: {
+    marginRight: "8px",
+  },
+});
 
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const { tasks, setTasks } = useTasks();
@@ -16,7 +43,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const shouldBeDisplayed = (canShow) => (canShow ? "flex" : "none");
 
   const getRemoveTask = (index) => {
-    const removeTask = (index) => {
+    const removeTask = () => {
       setTasks((prevTasks) => prevTasks.filter((_, i) => i !== index));
     };
 
@@ -48,45 +75,39 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
     return markAsCompleted;
   };
 
+  const classes = useStyles();
+
   return filteredTasks
     .filter((task) => task.canShow)
     .map((task, index) => (
-      <Box key={index}>
+      <div key={index} style={{ display: shouldBeDisplayed(task.canShow) }}>
         <ListItem
-          sx={{
-            width: "1050px",
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "10px",
-            cursor: "pointer",
-            textDecoration: task.completed ? "line-through" : "none",
-            color: task.completed ? "#999" : "black",
-            backgroundColor: "white",
-            display: shouldBeDisplayed(task.canShow),
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+          className={`${classes.listItem} ${
+            task.completed ? "completed" : "active"
+          }`}
           component="span"
         >
-          <Box component="span">
+          <div>
             {task.taskIndex + 1}. DESCRIPTION: {task.text}, SUBJECT:{" "}
             {task.subject}, PRIORITY: {task.priority}, DATE:{" "}
             {task.executionDate}
-          </Box>
+          </div>
 
-          <Box>
+          <div>
             <IconButton
               aria-label="complete"
               size="large"
               onClick={getMarkAsCompletedFn(index)}
+              className={classes.iconButton}
             >
-              <CheckIcon color="success" />
+              <CheckIcon color="primary" />
             </IconButton>
 
             <IconButton
               aria-label="edit"
               size="large"
               onClick={getEditFunction(index, task.completed)}
+              className={classes.iconButton}
             >
               <EditIcon style={{ color: "#1976D2" }} />
             </IconButton>
@@ -95,12 +116,13 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
               aria-label="delete"
               size="large"
               onClick={getRemoveTask(index)}
+              className={classes.iconButton}
             >
-              <RemoveCircleOutlineIcon color="error" />
+              <RemoveCircleOutlineIcon color="secondary" />
             </IconButton>
-          </Box>
+          </div>
         </ListItem>
-      </Box>
+      </div>
     ));
 };
 

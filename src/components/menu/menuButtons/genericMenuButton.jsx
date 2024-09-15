@@ -1,39 +1,115 @@
-import { styled } from "@mui/system";
-import Button from "@mui/material/Button";
-import { makeStyles } from "@mui/styles";
-import classNames from "classnames";
+import React from "react";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles({
+const useBaseButtonStyles = makeStyles({
   baseButton: {
     backgroundColor: "#E0E0E0",
     border: "none",
-    borderRadius: "4px",
-    padding: "10px 20px",
+    borderRadius: "10px",
+    padding: "20px 10px",
     fontSize: "1rem",
     cursor: "pointer",
-    marginLeft: "10px",
-    height: "40px",
+    margin: "5 10px",
+    marginLeft: "0px",
+    height: "35px",
     textTransform: "none",
-    marginTop: "15px",
+    boxShadow: "none",
   },
 });
 
-export const GenericMenuButton = ({
-  buttonClass,
-  onclick,
-  children,
-  startIcon,
-}) => {
-  const classes = useStyles();
+const useButtonStyles = makeStyles({
+  deleteButton: {
+    color: "red",
+    "&:hover": {
+      backgroundColor: "red",
+      color: "white",
+    },
+  },
+  hideButton: {
+    color: "black",
+    "&:hover": {
+      backgroundColor: "black",
+      color: "white",
+    },
+  },
+  showButton: {
+    color: "green",
+    "&:hover": {
+      backgroundColor: "green",
+      color: "white",
+    },
+  },
+});
+
+const BaseButton = ({ children, variantClassName, onClick, startIcon }) => {
+  const baseClasses = useBaseButtonStyles();
+
   return (
-    <Button
-      variant="outlined"
-      classes={{ root: "" }}
-      className={classNames(classes.baseButton, buttonClass)}
-      onClick={onclick}
+    <Box
+      style={{
+        backgroundColor: "#E0E0E0",
+        paddingLeft: "0px",
+        marginLeft: "10px",
+        marginRight: "10px",
+        borderRadius: "10px",
+        display: "inline-flex",
+        alignItems: "center",
+      }}
+    >
+      <Button
+        className={`${baseClasses.baseButton} ${variantClassName}`}
+        onClick={onClick}
+        startIcon={startIcon}
+      >
+        {children}
+      </Button>
+    </Box>
+  );
+};
+
+const DeleteCompletedTasksButton = ({ onClick, startIcon }) => {
+  const buttonClasses = useButtonStyles();
+  return (
+    <BaseButton
+      onClick={onClick}
+      variantClassName={buttonClasses.deleteButton}
       startIcon={startIcon}
     >
-      {children}
-    </Button>
+      Delete completed tasks
+    </BaseButton>
   );
+};
+
+const HideCompletedTasksButton = ({ onClick, startIcon }) => {
+  const buttonClasses = useButtonStyles();
+  return (
+    <BaseButton
+      onClick={onClick}
+      variantClassName={buttonClasses.hideButton}
+      startIcon={startIcon}
+    >
+      Hide completed tasks
+    </BaseButton>
+  );
+};
+
+const ShowAllTasksButton = ({ onClick, startIcon }) => {
+  const buttonClasses = useButtonStyles();
+  return (
+    <BaseButton
+      onClick={onClick}
+      variantClassName={buttonClasses.showButton}
+      startIcon={startIcon}
+    >
+      Show all tasks
+    </BaseButton>
+  );
+};
+
+export {
+  DeleteCompletedTasksButton,
+  HideCompletedTasksButton,
+  ShowAllTasksButton,
 };

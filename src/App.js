@@ -2,6 +2,7 @@ import _ from "lodash";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
+import useStyles from "useStyles";
 import Menu from "components/menu/menu";
 import ToDoIcon from "components/icons/todoIcon";
 import TaskDialog from "components/dialog/dialog";
@@ -11,6 +12,8 @@ import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
+  const classes = useStyles();
+
   const { tasks, setTasks } = useTasks();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState({});
@@ -88,26 +91,30 @@ const App = () => {
 
   return (
     <>
-      <ToDoIcon />
-      <SearchTaskFilter />
-      <Box display="flex" alignItems="center">
-        <AddTaskButton onClick={handleOpenDialog} />
-      </Box>
-      <Box>
-        <TaskDialog
-          taskToEdit={taskToEdit}
-          open={isDialogOpen}
-          onClose={handleCloseDialog}
-          onSave={handleSaveTask}
-        />
-      </Box>
-      <Box>
-        <TaskRepresentation
-          handleEdit={handleSaveEdit}
-          openDialog={handleOpenDialog}
-        />
-        <Menu />
-      </Box>
+      <div className={classes.body}>
+        <div className={classes.appContainer}>
+          <ToDoIcon />
+          <SearchTaskFilter />
+          <Box display="flex" alignItems="center">
+            <AddTaskButton onClick={handleOpenDialog} />
+          </Box>
+          <Box>
+            <TaskDialog
+              taskToEdit={taskToEdit}
+              open={isDialogOpen}
+              onClose={handleCloseDialog}
+              onSave={handleSaveTask}
+            />
+          </Box>
+          <Box>
+            <TaskRepresentation
+              handleEdit={handleSaveEdit}
+              openDialog={handleOpenDialog}
+            />
+            <Menu />
+          </Box>
+        </div>
+      </div>
     </>
   );
 };
