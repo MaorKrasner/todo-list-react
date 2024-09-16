@@ -50,12 +50,13 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
     return removeTask;
   };
 
-  const getEditFunction = (taskIndex, completed) => {
+  const getEditFunction = (task) => {
     const editFunction = () => {
-      if (!completed) {
-        handleEdit(taskIndex);
+      if (!task.completed) {
+        handleEdit(task);
         openDialog();
       }
+      return;
     };
 
     return editFunction;
@@ -106,7 +107,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
             <IconButton
               aria-label="edit"
               size="large"
-              onClick={getEditFunction(index, task.completed)}
+              onClick={getEditFunction(task)}
               className={classes.iconButton}
             >
               <EditIcon style={{ color: "#1976D2" }} />

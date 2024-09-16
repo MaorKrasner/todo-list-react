@@ -1,11 +1,9 @@
-/* src/index.css */
-
 body {
   background-color: #abcdef;
   font-family: Arial, sans-serif;
   padding: 20px;
 }
-  
+
 .App {
   display: flex;
   justify-content: center;
@@ -13,4 +11,3 @@ body {
   height: 100vh;
   background-color: #f0f0f0;
 }
-  
