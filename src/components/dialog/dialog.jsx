@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { useState } from "react";
 import enGB from "date-fns/locale/en-GB";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -45,17 +46,22 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
     onClose();
   };
 
+  const rightPriority = () => (_.isEmpty(taskToEdit) ? 5 : taskToEdit.priority);
+  const rightExecutionDate = () =>
+    setExecutionDate(
+      _.isEmpty(taskToEdit) ? executionDate : taskToEdit.executionDate
+    );
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Create a New Task</DialogTitle>
 
       <DialogContent>
         <TextField
-          defaultValue={taskToEdit ? taskToEdit.text : ""}
           margin="dense"
           label="Task Name"
           fullWidth
-          value={taskName}
+          defaultValue={taskToEdit.text}
           onChange={(e) => setTaskName(e.target.value)}
         />
 
@@ -71,7 +77,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
             Subject
           </InputLabel>
           <Select
-            value={subject}
+            value={taskToEdit.subject}
             onChange={(e) => setSubject(e.target.value)}
             input={<OutlinedInput label="Subject" id="subject-select" />}
             label="Subject"
@@ -107,7 +113,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
         <LocalizationProvider dateAdapter={AdapterDateFns} locale={enGB}>
           <DatePicker
             label="Execution Date"
-            value={executionDate}
+            value={rightExecutionDate}
             onChange={(newValue) => setExecutionDate(newValue)}
             renderInput={(params) => (
               <TextField
@@ -124,7 +130,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
         <FormControl fullWidth margin="dense">
           <InputLabel shrink>Priority</InputLabel>
           <Slider
-            value={priority}
+            defaultValue={rightPriority}
             onChange={(e, newValue) => setPriority(newValue)}
             aria-labelledby="priority-slider"
             valueLabelDisplay="auto"

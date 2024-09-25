@@ -20,6 +20,7 @@ const App = () => {
   };
 
   const handleCloseDialog = () => {
+    setTaskToEdit({});
     setIsDialogOpen(false);
   };
 
@@ -43,6 +44,8 @@ const App = () => {
         canShow: true,
       },
     ]);
+
+    setTaskToEdit({});
   };
 
   const handleTaskSaving = (taskName, subject, priority, executionDate) => {
