@@ -4,8 +4,8 @@ import React, { useState } from "react";
 
 import Menu from "components/menu/menu";
 import ToDoIcon from "components/icons/todoIcon";
-import TaskDialog from "components/dialog/dialog";
 import { useTasks } from "contexts/tasksContext";
+import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
@@ -13,14 +13,14 @@ import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 const App = () => {
   const { tasks, setTasks } = useTasks();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState({});
+  const [taskToEdit, setTaskToEdit] = useState(null);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
-    setTaskToEdit({});
+    setTaskToEdit(null);
     setIsDialogOpen(false);
   };
 
@@ -28,10 +28,12 @@ const App = () => {
     taskName,
     subject,
     priority,
-    executionDate,
-    taskIndex
+    executionDate
   ) => {
     const stringedDate = executionDate.toLocaleDateString("en-GB");
+    const taskIndex =
+      tasks.length > 0 ? tasks[tasks.length - 1].taskIndex + 1 : 0;
+
     setTasks((prev) => [
       ...prev,
       {
@@ -44,45 +46,31 @@ const App = () => {
         canShow: true,
       },
     ]);
-
-    setTaskToEdit({});
   };
 
-  const handleTaskSaving = (taskName, subject, priority, executionDate) => {
-    const stringedDate = executionDate.toLocaleDateString("en-GB");
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.taskIndex === taskToEdit.taskIndex
-          ? {
-              ...task,
-              text: taskName,
-              subject: subject,
-              priority: priority,
-              executionDate: stringedDate,
-            }
-          : task
-      )
-    );
-
-    setTaskToEdit({});
+  const handleTaskSaving = (editTask) => {
+    setTasks((prevTasks) => {
+      return prevTasks.map((task) => {
+        if (task.taskIndex === taskToEdit.taskIndex) {
+          return {
+            ...task,
+            text: editTask.taskName || "",
+            subject: editTask.subject || "",
+            priority: editTask.priority || 5,
+            executionDate:
+              new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
+              new Date(),
+          };
+        }
+        return task;
+      });
+    });
   };
 
-  const handleSaveTask = (
-    taskName,
-    subject,
-    priority,
-    executionDate,
-    taskIndex
-  ) => {
+  const handleSaveTask = (taskName, subject, priority, executionDate) => {
     _.isEmpty(taskToEdit)
-      ? handleNewTaskInsertion(
-          taskName,
-          subject,
-          priority,
-          executionDate,
-          taskIndex
-        )
-      : handleTaskSaving(taskName, subject, priority, executionDate);
+      ? handleNewTaskInsertion(taskName, subject, priority, executionDate)
+      : handleTaskSaving({ taskName, subject, priority, executionDate });
   };
 
   return (

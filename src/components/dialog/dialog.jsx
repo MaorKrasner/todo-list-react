@@ -1,37 +1,28 @@
 import _ from "lodash";
-import React, { useState } from "react";
 import enGB from "date-fns/locale/en-GB";
+import React, { useState, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
   Button,
   Dialog,
-  Select,
   Slider,
-  MenuItem,
   TextField,
   InputLabel,
   FormControl,
   DialogTitle,
   DialogContent,
   DialogActions,
-  OutlinedInput,
 } from "@mui/material";
 
 const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
-  const [executionDate, setExecutionDate] = useState(null);
+  const today = new Date();
+  const [executionDate, setExecutionDate] = useState(today);
   const [taskIndex, setTaskIndex] = useState(0);
-
-  const subjects = [
-    "Transfer of weapons",
-    "Intelligence gathering operation",
-    "Locate a new site",
-    "Activity routine characterization",
-  ];
 
   const areAllPropertiesFilled = !(
     taskName &&
@@ -40,17 +31,28 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
     executionDate
   );
 
+  useEffect(() => {
+    if (taskToEdit) {
+      console.log("taskToEdit loaded:", taskToEdit);
+      setTaskName(taskToEdit.text || "");
+      setSubject(taskToEdit.subject || "");
+      setPriority(taskToEdit.priority || 5);
+      setExecutionDate(
+        new Date(taskToEdit.executionDate).toLocaleDateString("en-US") ||
+          today.toLocaleDateString("en-US")
+      );
+    }
+  }, [taskToEdit]);
+
   const handleSave = () => {
     onSave(taskName, subject, priority, executionDate, taskIndex);
     setTaskIndex((prev) => prev + 1);
     onClose();
   };
 
-  const rightPriority = () => (_.isEmpty(taskToEdit) ? 5 : taskToEdit.priority);
-  const rightExecutionDate = () =>
-    setExecutionDate(
-      _.isEmpty(taskToEdit) ? executionDate : taskToEdit.executionDate
-    );
+  const handlePriorityChange = (event, newValue) => {
+    setPriority(newValue);
+  };
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -61,59 +63,26 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           margin="dense"
           label="Task Name"
           fullWidth
-          defaultValue={taskToEdit.text}
+          defaultValue={taskToEdit !== null ? taskToEdit.text : ""}
           onChange={(e) => setTaskName(e.target.value)}
         />
 
         <FormControl variant="outlined" fullWidth margin="dense">
-          <InputLabel
-            htmlFor="subject-select"
-            sx={{
-              backgroundColor: "white",
-              padding: "0 2px",
-              transform: "translate(14px, -6px) scale(0.75)",
-            }}
-          >
-            Subject
-          </InputLabel>
-          <Select
-            value={taskToEdit.subject}
-            onChange={(e) => setSubject(e.target.value)}
-            input={<OutlinedInput label="Subject" id="subject-select" />}
+          <TextField
             label="Subject"
-          >
-            {subjects.map((subject) => (
-              <MenuItem
-                key={subject}
-                value={subject}
-                sx={{
-                  padding: "4px 16px",
-                  minHeight: "30px",
-                  textAlign: "left",
-                }}
-                style={{
-                  display: "block",
-                  textAlign: "left",
-                }}
-              >
-                <span
-                  style={{
-                    textAlign: "left",
-                    width: "100%",
-                    paddingLeft: "8px",
-                  }}
-                >
-                  {subject}
-                </span>{" "}
-              </MenuItem>
-            ))}
-          </Select>
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            fullWidth
+            margin="dense"
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+          />
         </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns} locale={enGB}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
           <DatePicker
             label="Execution Date"
-            value={rightExecutionDate}
+            value={executionDate}
             onChange={(newValue) => setExecutionDate(newValue)}
             renderInput={(params) => (
               <TextField
@@ -127,20 +96,18 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           />
         </LocalizationProvider>
 
-        <FormControl fullWidth margin="dense">
-          <InputLabel shrink>Priority</InputLabel>
-          <Slider
-            defaultValue={rightPriority}
-            onChange={(e, newValue) => setPriority(newValue)}
-            aria-labelledby="priority-slider"
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={1}
-            max={10}
-          />
-        </FormControl>
+        <InputLabel margin="dense">Priority</InputLabel>
+        <Slider
+          value={priority}
+          onChange={handlePriorityChange}
+          min={1}
+          max={10}
+          marks
+          step={1}
+          valueLabelDisplay="auto"
+        />
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cancel

@@ -36,8 +36,11 @@ const useStyles = makeStyles({
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const { tasks, setTasks } = useTasks();
   const { searchQuery } = useSearch();
-  const filteredTasks = tasks.filter((task) =>
-    task.text.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const filteredTasks = tasks.filter(
+    (task) =>
+      (task.text || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (task.subject || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const shouldBeDisplayed = (canShow) => (canShow ? "flex" : "none");
@@ -53,7 +56,12 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const getEditFunction = (task) => {
     const editFunction = () => {
       if (!task.completed) {
-        handleEdit(task);
+        handleEdit({
+          ...task,
+          executionDate: new Date(task.executionDate).toLocaleDateString(
+            "en-GB"
+          ),
+        });
         openDialog();
       }
       return;
