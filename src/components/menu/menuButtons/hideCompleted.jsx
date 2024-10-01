@@ -1,11 +1,22 @@
 import React from "react";
 import HideSourceIcon from "@mui/icons-material/HideSource";
-
+import BaseButton from "components/menu/menuButtons/genericMenuButton";
 import { useTasks } from "contexts/tasksContext";
-import { HideCompletedTasksButton } from "components/menu/menuButtons/genericMenuButton";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useButtonStyles = makeStyles({
+  hideButton: {
+    color: "black",
+    "&:hover": {
+      backgroundColor: "black",
+      color: "white",
+    },
+  },
+});
 
 const HideCompletedTasks = () => {
   const { setTasks } = useTasks();
+  const buttonClasses = useButtonStyles();
 
   const hideCompletedTasksFromList = () => {
     setTasks((prevTasks) =>
@@ -16,11 +27,13 @@ const HideCompletedTasks = () => {
   };
 
   return (
-    <HideCompletedTasksButton
-      variant="outlined"
+    <BaseButton
       startIcon={<HideSourceIcon />}
       onClick={hideCompletedTasksFromList}
-    ></HideCompletedTasksButton>
+      variantClassName={buttonClasses.hideButton}
+    >
+      Hide completed tasks
+    </BaseButton>
   );
 };
 

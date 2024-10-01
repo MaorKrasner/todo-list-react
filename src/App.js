@@ -1,4 +1,4 @@
-import _ from "lodash";
+import isEmpty from "loadsh/isEmpty";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
@@ -52,6 +52,7 @@ const App = () => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
         if (task.taskIndex === taskToEdit.taskIndex) {
+          setTaskToEdit(null);
           return {
             ...task,
             text: editTask.taskName || "",
@@ -68,7 +69,7 @@ const App = () => {
   };
 
   const handleSaveTask = (taskName, subject, priority, executionDate) => {
-    _.isEmpty(taskToEdit)
+    isEmpty(taskToEdit)
       ? handleNewTaskInsertion(taskName, subject, priority, executionDate)
       : handleTaskSaving({ taskName, subject, priority, executionDate });
   };

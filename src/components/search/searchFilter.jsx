@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 });
 
 const SearchTaskFilter = () => {
-  const classes = useStyles(); // Get the styles
+  const classes = useStyles();
   const { searchQuery, setSearchQuery } = useSearch();
 
   const handleChange = (event) => {

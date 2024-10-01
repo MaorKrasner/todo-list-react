@@ -69,47 +69,4 @@ const BaseButton = ({ children, variantClassName, onClick, startIcon }) => {
   );
 };
 
-const DeleteCompletedTasksButton = ({ onClick, startIcon }) => {
-  const buttonClasses = useButtonStyles();
-  return (
-    <BaseButton
-      onClick={onClick}
-      variantClassName={buttonClasses.deleteButton}
-      startIcon={startIcon}
-    >
-      Delete completed tasks
-    </BaseButton>
-  );
-};
-
-const HideCompletedTasksButton = ({ onClick, startIcon }) => {
-  const buttonClasses = useButtonStyles();
-  return (
-    <BaseButton
-      onClick={onClick}
-      variantClassName={buttonClasses.hideButton}
-      startIcon={startIcon}
-    >
-      Hide completed tasks
-    </BaseButton>
-  );
-};
-
-const ShowAllTasksButton = ({ onClick, startIcon }) => {
-  const buttonClasses = useButtonStyles();
-  return (
-    <BaseButton
-      onClick={onClick}
-      variantClassName={buttonClasses.showButton}
-      startIcon={startIcon}
-    >
-      Show all tasks
-    </BaseButton>
-  );
-};
-
-export {
-  DeleteCompletedTasksButton,
-  HideCompletedTasksButton,
-  ShowAllTasksButton,
-};
+export default BaseButton;

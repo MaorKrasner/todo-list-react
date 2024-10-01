@@ -1,11 +1,22 @@
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import BaseButton from "components/menu/menuButtons/genericMenuButton";
 import { useTasks } from "contexts/tasksContext";
-import { DeleteCompletedTasksButton } from "components/menu/menuButtons/genericMenuButton";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useButtonStyles = makeStyles({
+  deleteButton: {
+    color: "red",
+    "&:hover": {
+      backgroundColor: "red",
+      color: "white",
+    },
+  },
+});
 
 const DeleteCompletedTasks = () => {
   const { setTasks } = useTasks();
+  const buttonClasses = useButtonStyles();
 
   const deleteAllCompletedTasksFromTasksList = () => {
     setTasks((prevTasks) =>
@@ -14,11 +25,13 @@ const DeleteCompletedTasks = () => {
   };
 
   return (
-    <DeleteCompletedTasksButton
-      variant="outlined"
+    <BaseButton
       startIcon={<DeleteIcon />}
       onClick={deleteAllCompletedTasksFromTasksList}
-    ></DeleteCompletedTasksButton>
+      variantClassName={buttonClasses.deleteButton}
+    >
+      Delete completed tasks
+    </BaseButton>
   );
 };
 

@@ -31,6 +31,15 @@ const useStyles = makeStyles({
   iconButton: {
     marginRight: "8px",
   },
+  taskContainer: {
+    display: "flex",
+  },
+  hiddenTaskContainer: {
+    display: "none",
+  },
+  editIcon: {
+    color: "#1976D2",
+  },
 });
 
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
@@ -42,8 +51,6 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
       (task.text || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
       (task.subject || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const shouldBeDisplayed = (canShow) => (canShow ? "flex" : "none");
 
   const getRemoveTask = (index) => {
     const removeTask = () => {
@@ -64,7 +71,6 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
         });
         openDialog();
       }
-      return;
     };
 
     return editFunction;
@@ -89,7 +95,12 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
   return filteredTasks
     .filter((task) => task.canShow)
     .map((task, index) => (
-      <div key={index} style={{ display: shouldBeDisplayed(task.canShow) }}>
+      <div
+        key={index}
+        className={
+          task.canShow ? classes.taskContainer : classes.hiddenTaskContainer
+        }
+      >
         <ListItem
           className={`${classes.listItem} ${
             task.completed ? "completed" : "active"
@@ -118,7 +129,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
               onClick={getEditFunction(task)}
               className={classes.iconButton}
             >
-              <EditIcon style={{ color: "#1976D2" }} />
+              <EditIcon className={classes.editIcon} />
             </IconButton>
 
             <IconButton
