@@ -1,2 +1,2 @@
-# todo-list-react
-Todo list with react and mai
+# todo-list-with-mui
+todo list app with mui and react
