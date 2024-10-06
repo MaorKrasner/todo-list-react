@@ -14,9 +14,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Box,
 } from "@mui/material";
+import MapComponent from "components/map/MapComponent";
 
-const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
+const TaskDialog = ({
+  taskToEdit,
+  open,
+  onClose,
+  onSave,
+  setSelectedLocation,
+}) => {
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
@@ -33,7 +41,6 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
 
   useEffect(() => {
     if (taskToEdit) {
-      console.log("taskToEdit loaded:", taskToEdit);
       setTaskName(taskToEdit.text || "");
       setSubject(taskToEdit.subject || "");
       setPriority(taskToEdit.priority || 5);
@@ -106,6 +113,10 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           step={1}
           valueLabelDisplay="auto"
         />
+
+        <Box>
+          <MapComponent setSelectedLocation={setSelectedLocation} />
+        </Box>
       </DialogContent>
 
       <DialogActions>

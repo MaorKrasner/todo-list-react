@@ -1,4 +1,4 @@
-import isEmpty from "loadsh/isEmpty";
+import isEmpty from "lodash/isEmpty";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
@@ -9,11 +9,13 @@ import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
+import MapComponent from "components/map/MapComponent";
 
 const App = () => {
   const { tasks, setTasks } = useTasks();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -28,7 +30,8 @@ const App = () => {
     taskName,
     subject,
     priority,
-    executionDate
+    executionDate,
+    location
   ) => {
     const stringedDate = executionDate.toLocaleDateString("en-GB");
     const taskIndex =
@@ -44,6 +47,7 @@ const App = () => {
         executionDate: stringedDate,
         completed: false,
         canShow: true,
+        location,
       },
     ]);
   };
@@ -61,6 +65,7 @@ const App = () => {
             executionDate:
               new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
               new Date(),
+            location: editTask.location || task.location,
           };
         }
         return task;
@@ -70,8 +75,20 @@ const App = () => {
 
   const handleSaveTask = (taskName, subject, priority, executionDate) => {
     isEmpty(taskToEdit)
-      ? handleNewTaskInsertion(taskName, subject, priority, executionDate)
-      : handleTaskSaving({ taskName, subject, priority, executionDate });
+      ? handleNewTaskInsertion(
+          taskName,
+          subject,
+          priority,
+          executionDate,
+          selectedLocation
+        )
+      : handleTaskSaving({
+          taskName,
+          subject,
+          priority,
+          executionDate,
+          location: selectedLocation,
+        });
   };
 
   return (
@@ -87,6 +104,7 @@ const App = () => {
           open={isDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
+          setSelectedLocation={setSelectedLocation}
         />
       </Box>
       <Box>
@@ -95,6 +113,9 @@ const App = () => {
           openDialog={handleOpenDialog}
         />
         <Menu />
+      </Box>
+      <Box>
+        <MapComponent tasks={tasks} />
       </Box>
     </>
   );
