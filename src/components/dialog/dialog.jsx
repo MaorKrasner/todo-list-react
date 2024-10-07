@@ -5,6 +5,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
+  Box,
   Button,
   Dialog,
   Slider,
@@ -14,29 +15,25 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
 } from "@mui/material";
+
 import MapComponent from "components/map/MapComponent";
 
-const TaskDialog = ({
-  taskToEdit,
-  open,
-  onClose,
-  onSave,
-  setSelectedLocation,
-}) => {
+const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
   const today = new Date();
   const [executionDate, setExecutionDate] = useState(today);
   const [taskIndex, setTaskIndex] = useState(0);
+  const [location, setLocation] = useState([0, 0]);
 
   const areAllPropertiesFilled = !(
     taskName &&
     subject &&
     priority &&
-    executionDate
+    executionDate &&
+    location
   );
 
   useEffect(() => {
@@ -52,7 +49,7 @@ const TaskDialog = ({
   }, [taskToEdit]);
 
   const handleSave = () => {
-    onSave(taskName, subject, priority, executionDate, taskIndex);
+    onSave(taskName, subject, priority, executionDate, taskIndex, location);
     setTaskIndex((prev) => prev + 1);
     onClose();
   };
@@ -115,7 +112,7 @@ const TaskDialog = ({
         />
 
         <Box>
-          <MapComponent setSelectedLocation={setSelectedLocation} />
+          <MapComponent canPoint={true} setLocation={setLocation} />
         </Box>
       </DialogContent>
 

@@ -7,9 +7,9 @@ import ToDoIcon from "components/icons/todoIcon";
 import { useTasks } from "contexts/tasksContext";
 import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
+import MapComponent from "components/map/MapComponent";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
-import MapComponent from "components/map/MapComponent";
 
 const App = () => {
   const { tasks, setTasks } = useTasks();
@@ -44,10 +44,10 @@ const App = () => {
         text: taskName,
         subject,
         priority,
+        location,
         executionDate: stringedDate,
         completed: false,
         canShow: true,
-        location,
       },
     ]);
   };
@@ -73,21 +73,28 @@ const App = () => {
     });
   };
 
-  const handleSaveTask = (taskName, subject, priority, executionDate) => {
+  const handleSaveTask = (
+    taskName,
+    subject,
+    priority,
+    executionDate,
+    taskIndex,
+    location
+  ) => {
     isEmpty(taskToEdit)
       ? handleNewTaskInsertion(
           taskName,
           subject,
           priority,
           executionDate,
-          selectedLocation
+          location
         )
       : handleTaskSaving({
           taskName,
           subject,
           priority,
           executionDate,
-          location: selectedLocation,
+          location,
         });
   };
 
@@ -104,7 +111,6 @@ const App = () => {
           open={isDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
-          setSelectedLocation={setSelectedLocation}
         />
       </Box>
       <Box>
@@ -115,7 +121,8 @@ const App = () => {
         <Menu />
       </Box>
       <Box>
-        <MapComponent tasks={tasks} />
+        <br></br>
+        <MapComponent canPoint={false} setLocation={null} />
       </Box>
     </>
   );

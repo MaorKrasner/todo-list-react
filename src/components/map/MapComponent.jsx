@@ -1,29 +1,32 @@
-import React, { useEffect } from "react";
 import "ol/ol.css";
-import { Map, View } from "ol";
-import { Tile as TileLayer } from "ol/layer";
+
 import { OSM } from "ol/source";
-import { fromLonLat, toLonLat } from "ol/proj";
-import { Vector as VectorLayer } from "ol/layer";
-import { Vector as VectorSource } from "ol/source";
-import { Feature } from "ol";
 import { Point } from "ol/geom";
 import { Style, Icon } from "ol/style";
+import { Map, View, Feature } from "ol";
+import { Tile as TileLayer } from "ol/layer";
+import { fromLonLat, toLonLat } from "ol/proj";
+import React, { useEffect, useRef } from "react";
+import { Vector as VectorLayer } from "ol/layer";
+import { Vector as VectorSource } from "ol/source";
 
-const MapComponent = ({ tasks }) => {
+import { useTasks } from "contexts/tasksContext";
+
+const MapComponent = ({ canPoint, setLocation }) => {
+  const mapRef = useRef();
+  const vectorSourceRef = useRef(new VectorSource());
+  const { tasks } = useTasks();
+
   useEffect(() => {
-    const vectorSource = new VectorSource();
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-    });
-
-    const map = new Map({
-      target: "map",
+    const initialMap = new Map({
+      target: mapRef.current,
       layers: [
         new TileLayer({
           source: new OSM(),
         }),
-        vectorLayer,
+        new VectorLayer({
+          source: vectorSourceRef.current,
+        }),
       ],
       view: new View({
         center: fromLonLat([0, 0]),
@@ -31,38 +34,58 @@ const MapComponent = ({ tasks }) => {
       }),
     });
 
-    const addTaskPin = (task) => {
-      if (!task.location) return;
+    const handleMapClick = (event) => {
+      if (canPoint) {
+        const coordinate = event.coordinate;
+        const lonLat = toLonLat(coordinate);
+        setLocation(lonLat);
 
-      const pin = new Feature({
-        geometry: new Point(fromLonLat(task.location)),
+        vectorSourceRef.current.clear();
+
+        const newFeature = new Feature({
+          geometry: new Point(coordinate),
+        });
+
+        newFeature.setStyle(
+          new Style({
+            image: new Icon({
+              src: "https://openlayers.org/en/latest/examples/data/icon.png",
+              scale: 0.7,
+            }),
+          })
+        );
+
+        vectorSourceRef.current.addFeature(newFeature);
+      }
+    };
+
+    initialMap.on("singleclick", handleMapClick);
+
+    tasks.forEach((task) => {
+      const location = task.location;
+      // const coordinate = fromLonLat([location.lon, location.lat]);
+      const taskFeature = new Feature({
+        geometry: new Point(location),
       });
 
-      pin.setStyle(
+      taskFeature.setStyle(
         new Style({
           image: new Icon({
-            src: task.completed
-              ? "https://cdn-icons-png.flaticon.com/512/684/684908.png"
-              : "https://cdn-icons-png.flaticon.com/512/64/64113.png",
-            scale: 0.05,
-            color: task.completed ? "green" : "red",
+            src: "https://openlayers.org/en/latest/examples/data/icon.png",
+            scale: 0.7,
           }),
         })
       );
 
-      pin.set("taskInfo", task.text);
-
-      vectorSource.addFeature(pin);
-    };
-
-    tasks.forEach((task) => {
-      addTaskPin(task);
+      vectorSourceRef.current.addFeature(taskFeature);
     });
 
-    return () => map.setTarget(null);
-  }, [tasks]);
+    return () => {
+      initialMap.setTarget(null);
+    };
+  }, [canPoint, setLocation, tasks]);
 
-  return <div id="map" style={{ width: "100%", height: "400px" }}></div>;
+  return <div ref={mapRef} style={{ width: "100%", height: "400px" }} />;
 };
 
 export default MapComponent;
