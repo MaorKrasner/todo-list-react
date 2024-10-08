@@ -5,7 +5,7 @@ import { Point } from "ol/geom";
 import { Style, Icon } from "ol/style";
 import { Map, View, Feature } from "ol";
 import { Tile as TileLayer } from "ol/layer";
-import { fromLonLat, toLonLat } from "ol/proj";
+import { fromLonLat, toLonLat, transform } from "ol/proj";
 import React, { useEffect, useRef } from "react";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
@@ -16,6 +16,8 @@ const MapComponent = ({ canPoint, setLocation }) => {
   const mapRef = useRef();
   const vectorSourceRef = useRef(new VectorSource());
   const { tasks } = useTasks();
+
+  const isInEditMode = false;
 
   useEffect(() => {
     const initialMap = new Map({
@@ -62,10 +64,13 @@ const MapComponent = ({ canPoint, setLocation }) => {
     initialMap.on("singleclick", handleMapClick);
 
     tasks.forEach((task) => {
-      const location = task.location;
-      // const coordinate = fromLonLat([location.lon, location.lat]);
+      const transformedCoordinates = transform(
+        task.location,
+        "EPSG:4326",
+        "EPSG:3857"
+      );
       const taskFeature = new Feature({
-        geometry: new Point(location),
+        geometry: new Point(transformedCoordinates),
       });
 
       taskFeature.setStyle(

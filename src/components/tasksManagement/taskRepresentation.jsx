@@ -7,6 +7,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 import { useTasks } from "contexts/tasksContext";
 import { useSearch } from "contexts/searchContext";
+import { useDialogFlag } from "contexts/dialogContext";
 
 const useStyles = makeStyles({
   listItem: {
@@ -45,10 +46,11 @@ const useStyles = makeStyles({
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const { tasks, setTasks } = useTasks();
   const { searchQuery } = useSearch();
+  const { setIsAddingTask } = useDialogFlag();
 
   const filteredTasks = tasks.filter(
     (task) =>
-      (task.text || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (task.taskName || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
       (task.subject || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -63,10 +65,11 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const getEditFunction = (task) => {
     const editFunction = () => {
       if (!task.completed) {
+        setIsAddingTask(false);
         handleEdit({
           ...task,
           executionDate: new Date(task.executionDate).toLocaleDateString(
-            "en-GB"
+            "en-US"
           ),
         });
         openDialog();
@@ -108,7 +111,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
           component="span"
         >
           <div>
-            {task.taskIndex + 1}. DESCRIPTION: {task.text}, SUBJECT:{" "}
+            {task.taskIndex + 1}. DESCRIPTION: {task.taskName}, SUBJECT:{" "}
             {task.subject}, PRIORITY: {task.priority}, DATE:{" "}
             {task.executionDate}
           </div>

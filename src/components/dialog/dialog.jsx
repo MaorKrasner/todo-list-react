@@ -1,5 +1,5 @@
 import _ from "lodash";
-import enGB from "date-fns/locale/en-GB";
+import enUS from "date-fns/locale/en-US";
 import React, { useState, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import MapComponent from "components/map/MapComponent";
+import { useDialogFlag } from "contexts/dialogContext";
 
 const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState("");
@@ -27,6 +28,8 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
   const [executionDate, setExecutionDate] = useState(today);
   const [taskIndex, setTaskIndex] = useState(0);
   const [location, setLocation] = useState([0, 0]);
+
+  const { isAddingTask } = useDialogFlag();
 
   const areAllPropertiesFilled = !(
     taskName &&
@@ -38,18 +41,28 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
 
   useEffect(() => {
     if (taskToEdit) {
-      setTaskName(taskToEdit.text || "");
+      setTaskName(taskToEdit.taskName || "");
       setSubject(taskToEdit.subject || "");
       setPriority(taskToEdit.priority || 5);
       setExecutionDate(
         new Date(taskToEdit.executionDate).toLocaleDateString("en-US") ||
           today.toLocaleDateString("en-US")
       );
+      setLocation(taskToEdit.location || [0, 0]);
     }
   }, [taskToEdit]);
 
   const handleSave = () => {
-    onSave(taskName, subject, priority, executionDate, taskIndex, location);
+    onSave(taskName, subject, priority, executionDate, location);
+    setTaskName(taskToEdit?.taskName ?? "");
+    setSubject(taskToEdit?.subject ?? "");
+    setPriority(taskToEdit?.priority ?? 5);
+    setExecutionDate(
+      taskToEdit?.executionDate ?? today.toLocaleDateString("en-US")
+      // new Date(taskToEdit.executionDate).toLocaleDateString("en-US") ||
+      //   today.toLocaleDateString("en-US")
+    );
+    setLocation(taskToEdit?.location ?? [0, 0]);
     setTaskIndex((prev) => prev + 1);
     onClose();
   };
@@ -67,7 +80,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           margin="dense"
           label="Task Name"
           fullWidth
-          defaultValue={taskToEdit !== null ? taskToEdit.text : ""}
+          defaultValue={taskName}
           onChange={(e) => setTaskName(e.target.value)}
         />
 
@@ -83,11 +96,12 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           />
         </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
           <DatePicker
             label="Execution Date"
             value={executionDate}
             onChange={(newValue) => setExecutionDate(newValue)}
+            //dateFormat="MM/dd/yyyy"
             renderInput={(params) => (
               <TextField
                 {...params}

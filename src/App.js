@@ -7,17 +7,20 @@ import ToDoIcon from "components/icons/todoIcon";
 import { useTasks } from "contexts/tasksContext";
 import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
+import { useDialogFlag } from "contexts/dialogContext";
 import MapComponent from "components/map/MapComponent";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
   const { tasks, setTasks } = useTasks();
+  const { setIsAddingTask } = useDialogFlag();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleOpenDialog = () => {
+    setIsAddingTask(true);
     setIsDialogOpen(true);
   };
 
@@ -33,15 +36,14 @@ const App = () => {
     executionDate,
     location
   ) => {
-    const stringedDate = executionDate.toLocaleDateString("en-GB");
-    const taskIndex =
-      tasks.length > 0 ? tasks[tasks.length - 1].taskIndex + 1 : 0;
+    const stringedDate = executionDate.toLocaleDateString("en-US");
+    const taskIndex = tasks.length > 0 ? tasks.length + 1 : 0;
 
     setTasks((prev) => [
       ...prev,
       {
-        taskIndex,
-        text: taskName,
+        taskIndex: taskIndex,
+        taskName,
         subject,
         priority,
         location,
@@ -50,23 +52,36 @@ const App = () => {
         canShow: true,
       },
     ]);
+
+    setTaskToEdit(null);
   };
 
   const handleTaskSaving = (editTask) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
         if (task.taskIndex === taskToEdit.taskIndex) {
-          setTaskToEdit(null);
-          return {
+          const newTask = {
             ...task,
-            text: editTask.taskName || "",
-            subject: editTask.subject || "",
-            priority: editTask.priority || 5,
+            taskName: taskToEdit.taskName || "",
+            subject: taskToEdit.subject || "",
+            priority: taskToEdit.priority || 5,
             executionDate:
-              new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
+              new Date(editTask.executionDate).toLocaleDateString("en-US") ||
               new Date(),
-            location: editTask.location || task.location,
+            location: taskToEdit.location || [0, 0],
           };
+          setTaskToEdit(null);
+          return newTask;
+          // return {
+          //   ...task,
+          //   taskName: editTask.taskName || "",
+          //   subject: editTask.subject || "",
+          //   priority: editTask.priority || 5,
+          //   executionDate:
+          //     new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
+          //     new Date(),
+          //   location: editTask.location || task.location,
+          // };
         }
         return task;
       });
@@ -78,7 +93,6 @@ const App = () => {
     subject,
     priority,
     executionDate,
-    taskIndex,
     location
   ) => {
     isEmpty(taskToEdit)
