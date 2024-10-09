@@ -18,18 +18,16 @@ import {
 } from "@mui/material";
 
 import MapComponent from "components/map/MapComponent";
-import { useDialogFlag } from "contexts/dialogContext";
+import { useTaskToEdit } from "contexts/taskToEditContext";
 
-const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
+const TaskDialog = ({ open, onClose, onSave }) => {
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
   const today = new Date();
   const [executionDate, setExecutionDate] = useState(today);
-  const [taskIndex, setTaskIndex] = useState(0);
   const [location, setLocation] = useState([0, 0]);
-
-  const { isAddingTask } = useDialogFlag();
+  const { taskToEdit } = useTaskToEdit();
 
   const areAllPropertiesFilled = !(
     taskName &&
@@ -59,11 +57,8 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
     setPriority(taskToEdit?.priority ?? 5);
     setExecutionDate(
       taskToEdit?.executionDate ?? today.toLocaleDateString("en-US")
-      // new Date(taskToEdit.executionDate).toLocaleDateString("en-US") ||
-      //   today.toLocaleDateString("en-US")
     );
     setLocation(taskToEdit?.location ?? [0, 0]);
-    setTaskIndex((prev) => prev + 1);
     onClose();
   };
 

@@ -9,23 +9,25 @@ import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
 import { useDialogFlag } from "contexts/dialogContext";
 import MapComponent from "components/map/MapComponent";
+import { useTaskToEdit } from "contexts/taskToEditContext";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
   const { tasks, setTasks } = useTasks();
-  const { setIsAddingTask } = useDialogFlag();
+  const { setIsAddingOrEditing } = useDialogFlag();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState(null);
+  const { taskToEdit, setTaskToEdit } = useTaskToEdit();
 
   const handleOpenDialog = () => {
-    setIsAddingTask(true);
+    setIsAddingOrEditing(true);
     setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setTaskToEdit(null);
+    setIsAddingOrEditing(false);
     setIsDialogOpen(false);
   };
 
@@ -37,7 +39,7 @@ const App = () => {
     location
   ) => {
     const stringedDate = executionDate.toLocaleDateString("en-US");
-    const taskIndex = tasks.length > 0 ? tasks.length + 1 : 0;
+    const taskIndex = tasks.length > 0 ? tasks.length : 0;
 
     setTasks((prev) => [
       ...prev,
@@ -53,9 +55,11 @@ const App = () => {
       },
     ]);
 
-    setTaskToEdit(null);
+    setTaskToEdit((prev) => tasks[tasks.length - 1]);
+    console.log(taskToEdit);
   };
 
+  // HERE, IN THE MAP
   const handleTaskSaving = (editTask) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
@@ -70,18 +74,9 @@ const App = () => {
               new Date(),
             location: taskToEdit.location || [0, 0],
           };
+
           setTaskToEdit(null);
           return newTask;
-          // return {
-          //   ...task,
-          //   taskName: editTask.taskName || "",
-          //   subject: editTask.subject || "",
-          //   priority: editTask.priority || 5,
-          //   executionDate:
-          //     new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
-          //     new Date(),
-          //   location: editTask.location || task.location,
-          // };
         }
         return task;
       });
@@ -121,7 +116,6 @@ const App = () => {
       </Box>
       <Box>
         <TaskDialog
-          taskToEdit={taskToEdit}
           open={isDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
@@ -129,7 +123,7 @@ const App = () => {
       </Box>
       <Box>
         <TaskRepresentation
-          handleEdit={setTaskToEdit}
+          handleEdit={handleTaskSaving}
           openDialog={handleOpenDialog}
         />
         <Menu />

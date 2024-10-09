@@ -8,6 +8,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { useTasks } from "contexts/tasksContext";
 import { useSearch } from "contexts/searchContext";
 import { useDialogFlag } from "contexts/dialogContext";
+import { useTaskToEdit } from "contexts/taskToEditContext";
 
 const useStyles = makeStyles({
   listItem: {
@@ -46,7 +47,9 @@ const useStyles = makeStyles({
 const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const { tasks, setTasks } = useTasks();
   const { searchQuery } = useSearch();
-  const { setIsAddingTask } = useDialogFlag();
+  const { setTaskToEdit } = useTaskToEdit();
+
+  const { setIsAddingOrEditing } = useDialogFlag();
 
   const filteredTasks = tasks.filter(
     (task) =>
@@ -65,13 +68,15 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
   const getEditFunction = (task) => {
     const editFunction = () => {
       if (!task.completed) {
-        setIsAddingTask(false);
-        handleEdit({
+        setIsAddingOrEditing(false);
+        const taskToChange = {
           ...task,
           executionDate: new Date(task.executionDate).toLocaleDateString(
             "en-US"
           ),
-        });
+        };
+        setTaskToEdit(taskToChange);
+        handleEdit(taskToChange);
         openDialog();
       }
     };
@@ -129,7 +134,7 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
             <IconButton
               aria-label="edit"
               size="large"
-              onClick={getEditFunction(task)}
+              onClick={getEditFunction({ ...task, taskIndex: index })}
               className={classes.iconButton}
             >
               <EditIcon className={classes.editIcon} />
