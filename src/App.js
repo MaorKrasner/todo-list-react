@@ -14,14 +14,14 @@ import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { tasks, setTasks } = useTasks();
   const { setIsAddingOrEditing } = useDialogFlag();
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { taskToEdit, setTaskToEdit } = useTaskToEdit();
 
-  const handleOpenDialog = () => {
-    setIsAddingOrEditing(true);
+  const handleOpenDialog = (isAdding) => {
+    setIsAddingOrEditing(isAdding);
     setIsDialogOpen(true);
   };
 
@@ -39,12 +39,12 @@ const App = () => {
     location
   ) => {
     const stringedDate = executionDate.toLocaleDateString("en-US");
-    const taskIndex = tasks.length > 0 ? tasks.length : 0;
+    const index = tasks.length ?? 0;
 
     setTasks((prev) => [
       ...prev,
       {
-        taskIndex: taskIndex,
+        taskIndex: index,
         taskName,
         subject,
         priority,
@@ -54,28 +54,23 @@ const App = () => {
         canShow: true,
       },
     ]);
-
-    setTaskToEdit((prev) => tasks[tasks.length - 1]);
-    console.log(taskToEdit);
   };
 
-  // HERE, IN THE MAP
   const handleTaskSaving = (editTask) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
-        if (task.taskIndex === taskToEdit.taskIndex) {
+        if (task.taskIndex === editTask.taskIndex) {
+          setTaskToEdit(null);
           const newTask = {
             ...task,
-            taskName: taskToEdit.taskName || "",
-            subject: taskToEdit.subject || "",
-            priority: taskToEdit.priority || 5,
+            taskName: editTask.taskName || "",
+            subject: editTask.subject || "",
+            priority: editTask.priority || 5,
             executionDate:
               new Date(editTask.executionDate).toLocaleDateString("en-US") ||
               new Date(),
-            location: taskToEdit.location || [0, 0],
+            location: editTask.location || [0, 0],
           };
-
-          setTaskToEdit(null);
           return newTask;
         }
         return task;
@@ -88,7 +83,8 @@ const App = () => {
     subject,
     priority,
     executionDate,
-    location
+    location,
+    taskIndex
   ) => {
     isEmpty(taskToEdit)
       ? handleNewTaskInsertion(
@@ -104,6 +100,7 @@ const App = () => {
           priority,
           executionDate,
           location,
+          taskIndex,
         });
   };
 
@@ -122,10 +119,7 @@ const App = () => {
         />
       </Box>
       <Box>
-        <TaskRepresentation
-          handleEdit={handleTaskSaving}
-          openDialog={handleOpenDialog}
-        />
+        <TaskRepresentation openDialog={handleOpenDialog} />
         <Menu />
       </Box>
       <Box>

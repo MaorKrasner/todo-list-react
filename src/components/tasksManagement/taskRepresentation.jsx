@@ -44,7 +44,7 @@ const useStyles = makeStyles({
   },
 });
 
-const TaskRepresentation = ({ handleEdit, openDialog }) => {
+const TaskRepresentation = ({ openDialog }) => {
   const { tasks, setTasks } = useTasks();
   const { searchQuery } = useSearch();
   const { setTaskToEdit } = useTaskToEdit();
@@ -69,15 +69,8 @@ const TaskRepresentation = ({ handleEdit, openDialog }) => {
     const editFunction = () => {
       if (!task.completed) {
         setIsAddingOrEditing(false);
-        const taskToChange = {
-          ...task,
-          executionDate: new Date(task.executionDate).toLocaleDateString(
-            "en-US"
-          ),
-        };
-        setTaskToEdit(taskToChange);
-        handleEdit(taskToChange);
-        openDialog();
+        setTaskToEdit(task);
+        openDialog(false);
       }
     };
 

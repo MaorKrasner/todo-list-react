@@ -5,10 +5,10 @@ import { Point } from "ol/geom";
 import { Style, Icon } from "ol/style";
 import { Map, View, Feature } from "ol";
 import { Tile as TileLayer } from "ol/layer";
-import { fromLonLat, toLonLat, transform } from "ol/proj";
 import React, { useEffect, useRef } from "react";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
+import { fromLonLat, toLonLat, transform } from "ol/proj";
 
 import { useTasks } from "contexts/tasksContext";
 import { useDialogFlag } from "contexts/dialogContext";
@@ -21,17 +21,30 @@ const MapComponent = ({ canPoint, setLocation }) => {
   const { taskToEdit } = useTaskToEdit();
   const { isAddingOrEditing } = useDialogFlag();
 
+  const addPinFeature = (coordinate) => {
+    const newFeature = new Feature({
+      geometry: new Point(coordinate),
+    });
+
+    newFeature.setStyle(
+      new Style({
+        image: new Icon({
+          src: "https://openlayers.org/en/latest/examples/data/icon.png",
+          scale: 0.7,
+        }),
+      })
+    );
+
+    vectorSourceRef.current.addFeature(newFeature);
+  };
+
   const showLocationPointsOfTasks = () => {
-    let tasksToShow;
-    if (taskToEdit) {
-      tasksToShow = tasks.filter(
-        (task) => task.taskIndex === taskToEdit.taskIndex
-      );
-    } else if (isAddingOrEditing) {
-      tasksToShow = [];
-    } else {
-      tasksToShow = tasks;
-    }
+    vectorSourceRef.current.clear();
+    let tasksToShow = taskToEdit
+      ? tasks.filter((task) => task.taskIndex === taskToEdit.taskIndex)
+      : isAddingOrEditing
+      ? []
+      : tasks;
 
     tasksToShow.forEach((task) => {
       const transformedCoordinates = transform(
@@ -39,20 +52,8 @@ const MapComponent = ({ canPoint, setLocation }) => {
         "EPSG:4326",
         "EPSG:3857"
       );
-      const taskFeature = new Feature({
-        geometry: new Point(transformedCoordinates),
-      });
 
-      taskFeature.setStyle(
-        new Style({
-          image: new Icon({
-            src: "https://openlayers.org/en/latest/examples/data/icon.png",
-            scale: 0.7,
-          }),
-        })
-      );
-
-      vectorSourceRef.current.addFeature(taskFeature);
+      addPinFeature(transformedCoordinates);
     });
   };
 
@@ -80,26 +81,11 @@ const MapComponent = ({ canPoint, setLocation }) => {
         setLocation(lonLat);
 
         vectorSourceRef.current.clear();
-
-        const newFeature = new Feature({
-          geometry: new Point(coordinate),
-        });
-
-        newFeature.setStyle(
-          new Style({
-            image: new Icon({
-              src: "https://openlayers.org/en/latest/examples/data/icon.png",
-              scale: 0.7,
-            }),
-          })
-        );
-
-        vectorSourceRef.current.addFeature(newFeature);
+        addPinFeature(coordinate);
       }
     };
 
     initialMap.on("singleclick", handleMapClick);
-
     showLocationPointsOfTasks();
 
     return () => {

@@ -17,17 +17,24 @@ import {
   DialogActions,
 } from "@mui/material";
 
+import { useTasks } from "contexts/tasksContext";
 import MapComponent from "components/map/MapComponent";
+import { useDialogFlag } from "contexts/dialogContext";
 import { useTaskToEdit } from "contexts/taskToEditContext";
 
 const TaskDialog = ({ open, onClose, onSave }) => {
+  const today = new Date();
+
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
-  const today = new Date();
   const [executionDate, setExecutionDate] = useState(today);
   const [location, setLocation] = useState([0, 0]);
+  const [taskIndex, setTaskIndex] = useState(0);
+
   const { taskToEdit } = useTaskToEdit();
+  const { tasks } = useTasks();
+  const { isAddingOrEditing } = useDialogFlag();
 
   const areAllPropertiesFilled = !(
     taskName &&
@@ -47,11 +54,12 @@ const TaskDialog = ({ open, onClose, onSave }) => {
           today.toLocaleDateString("en-US")
       );
       setLocation(taskToEdit.location || [0, 0]);
+      if (isAddingOrEditing) setTaskIndex(tasks.length ?? 0);
     }
-  }, [taskToEdit]);
+  }, [taskToEdit, isAddingOrEditing, tasks]);
 
   const handleSave = () => {
-    onSave(taskName, subject, priority, executionDate, location);
+    onSave(taskName, subject, priority, executionDate, location, taskIndex);
     setTaskName(taskToEdit?.taskName ?? "");
     setSubject(taskToEdit?.subject ?? "");
     setPriority(taskToEdit?.priority ?? 5);
@@ -59,6 +67,7 @@ const TaskDialog = ({ open, onClose, onSave }) => {
       taskToEdit?.executionDate ?? today.toLocaleDateString("en-US")
     );
     setLocation(taskToEdit?.location ?? [0, 0]);
+    if (isAddingOrEditing) setTaskIndex(tasks.length ?? 0);
     onClose();
   };
 
@@ -96,7 +105,6 @@ const TaskDialog = ({ open, onClose, onSave }) => {
             label="Execution Date"
             value={executionDate}
             onChange={(newValue) => setExecutionDate(newValue)}
-            //dateFormat="MM/dd/yyyy"
             renderInput={(params) => (
               <TextField
                 {...params}
