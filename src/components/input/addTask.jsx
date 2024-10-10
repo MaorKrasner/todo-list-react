@@ -27,9 +27,13 @@ const useStyles = makeStyles({
 const AddTaskButton = ({ onClick }) => {
   const classes = useStyles();
 
+  const openDialog = () => {
+    onClick(true);
+  };
+
   return (
     <Button
-      onClick={onClick}
+      onClick={openDialog}
       variant="outlined"
       startIcon={<PlaylistAddIcon />}
       className={classes.button}
