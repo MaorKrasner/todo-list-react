@@ -1,10 +1,11 @@
 import _ from "lodash";
-import enGB from "date-fns/locale/en-GB";
+import enUS from "date-fns/locale/en-US";
 import React, { useState, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
+  Box,
   Button,
   Dialog,
   Slider,
@@ -16,37 +17,57 @@ import {
   DialogActions,
 } from "@mui/material";
 
-const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
+import { useTasks } from "contexts/tasksContext";
+import MapComponent from "components/map/MapComponent";
+import { useDialogFlag } from "contexts/dialogContext";
+import { useTaskToEdit } from "contexts/taskToEditContext";
+
+const TaskDialog = ({ open, onClose, onSave }) => {
+  const today = new Date();
+
   const [taskName, setTaskName] = useState("");
   const [subject, setSubject] = useState("");
   const [priority, setPriority] = useState(5);
-  const today = new Date();
   const [executionDate, setExecutionDate] = useState(today);
+  const [location, setLocation] = useState([0, 0]);
   const [taskIndex, setTaskIndex] = useState(0);
+
+  const { taskToEdit } = useTaskToEdit();
+  const { tasks } = useTasks();
+  const { isAddingOrEditing } = useDialogFlag();
 
   const areAllPropertiesFilled = !(
     taskName &&
     subject &&
     priority &&
-    executionDate
+    executionDate &&
+    location
   );
 
   useEffect(() => {
     if (taskToEdit) {
-      console.log("taskToEdit loaded:", taskToEdit);
-      setTaskName(taskToEdit.text || "");
+      setTaskName(taskToEdit.taskName || "");
       setSubject(taskToEdit.subject || "");
       setPriority(taskToEdit.priority || 5);
       setExecutionDate(
         new Date(taskToEdit.executionDate).toLocaleDateString("en-US") ||
           today.toLocaleDateString("en-US")
       );
+      setLocation(taskToEdit.location || [0, 0]);
+      if (isAddingOrEditing) setTaskIndex(tasks.length ?? 0);
     }
-  }, [taskToEdit]);
+  }, [taskToEdit, isAddingOrEditing, tasks]);
 
   const handleSave = () => {
-    onSave(taskName, subject, priority, executionDate, taskIndex);
-    setTaskIndex((prev) => prev + 1);
+    onSave(taskName, subject, priority, executionDate, location, taskIndex);
+    setTaskName(taskToEdit?.taskName ?? "");
+    setSubject(taskToEdit?.subject ?? "");
+    setPriority(taskToEdit?.priority ?? 5);
+    setExecutionDate(
+      taskToEdit?.executionDate ?? today.toLocaleDateString("en-US")
+    );
+    setLocation(taskToEdit?.location ?? [0, 0]);
+    if (isAddingOrEditing) setTaskIndex(tasks.length ?? 0);
     onClose();
   };
 
@@ -63,7 +84,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           margin="dense"
           label="Task Name"
           fullWidth
-          defaultValue={taskToEdit !== null ? taskToEdit.text : ""}
+          defaultValue={taskName}
           onChange={(e) => setTaskName(e.target.value)}
         />
 
@@ -79,7 +100,7 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           />
         </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
           <DatePicker
             label="Execution Date"
             value={executionDate}
@@ -106,6 +127,10 @@ const TaskDialog = ({ taskToEdit, open, onClose, onSave }) => {
           step={1}
           valueLabelDisplay="auto"
         />
+
+        <Box>
+          <MapComponent canPoint={true} setLocation={setLocation} />
+        </Box>
       </DialogContent>
 
       <DialogActions>

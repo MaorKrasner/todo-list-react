@@ -19,30 +19,6 @@ const useBaseButtonStyles = makeStyles({
   },
 });
 
-const useButtonStyles = makeStyles({
-  deleteButton: {
-    color: "red",
-    "&:hover": {
-      backgroundColor: "red",
-      color: "white",
-    },
-  },
-  hideButton: {
-    color: "black",
-    "&:hover": {
-      backgroundColor: "black",
-      color: "white",
-    },
-  },
-  showButton: {
-    color: "green",
-    "&:hover": {
-      backgroundColor: "green",
-      color: "white",
-    },
-  },
-});
-
 const BaseButton = ({ children, variantClassName, onClick, startIcon }) => {
   const baseClasses = useBaseButtonStyles();
 

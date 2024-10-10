@@ -1,4 +1,4 @@
-import isEmpty from "loadsh/isEmpty";
+import isEmpty from "lodash/isEmpty";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
@@ -7,20 +7,27 @@ import ToDoIcon from "components/icons/todoIcon";
 import { useTasks } from "contexts/tasksContext";
 import TaskDialog from "components/dialog/dialog";
 import AddTaskButton from "components/input/addTask";
+import { useDialogFlag } from "contexts/dialogContext";
+import MapComponent from "components/map/MapComponent";
+import { useTaskToEdit } from "contexts/taskToEditContext";
 import SearchTaskFilter from "components/search/searchFilter";
 import TaskRepresentation from "components/tasksManagement/taskRepresentation";
 
 const App = () => {
-  const { tasks, setTasks } = useTasks();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState(null);
 
-  const handleOpenDialog = () => {
+  const { tasks, setTasks } = useTasks();
+  const { setIsAddingOrEditing } = useDialogFlag();
+  const { taskToEdit, setTaskToEdit } = useTaskToEdit();
+
+  const handleOpenDialog = (isAdding) => {
+    setIsAddingOrEditing(isAdding);
     setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setTaskToEdit(null);
+    setIsAddingOrEditing(false);
     setIsDialogOpen(false);
   };
 
@@ -28,19 +35,20 @@ const App = () => {
     taskName,
     subject,
     priority,
-    executionDate
+    executionDate,
+    location
   ) => {
-    const stringedDate = executionDate.toLocaleDateString("en-GB");
-    const taskIndex =
-      tasks.length > 0 ? tasks[tasks.length - 1].taskIndex + 1 : 0;
+    const stringedDate = executionDate.toLocaleDateString("en-US");
+    const index = tasks.length ?? 0;
 
     setTasks((prev) => [
       ...prev,
       {
-        taskIndex,
-        text: taskName,
+        taskIndex: index,
+        taskName,
         subject,
         priority,
+        location,
         executionDate: stringedDate,
         completed: false,
         canShow: true,
@@ -51,27 +59,49 @@ const App = () => {
   const handleTaskSaving = (editTask) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
-        if (task.taskIndex === taskToEdit.taskIndex) {
+        if (task.taskIndex === editTask.taskIndex) {
           setTaskToEdit(null);
-          return {
+          const newTask = {
             ...task,
-            text: editTask.taskName || "",
+            taskName: editTask.taskName || "",
             subject: editTask.subject || "",
             priority: editTask.priority || 5,
             executionDate:
-              new Date(editTask.executionDate).toLocaleDateString("en-GB") ||
+              new Date(editTask.executionDate).toLocaleDateString("en-US") ||
               new Date(),
+            location: editTask.location || [0, 0],
           };
+          return newTask;
         }
         return task;
       });
     });
   };
 
-  const handleSaveTask = (taskName, subject, priority, executionDate) => {
+  const handleSaveTask = (
+    taskName,
+    subject,
+    priority,
+    executionDate,
+    location,
+    taskIndex
+  ) => {
     isEmpty(taskToEdit)
-      ? handleNewTaskInsertion(taskName, subject, priority, executionDate)
-      : handleTaskSaving({ taskName, subject, priority, executionDate });
+      ? handleNewTaskInsertion(
+          taskName,
+          subject,
+          priority,
+          executionDate,
+          location
+        )
+      : handleTaskSaving({
+          taskName,
+          subject,
+          priority,
+          executionDate,
+          location,
+          taskIndex,
+        });
   };
 
   return (
@@ -83,18 +113,18 @@ const App = () => {
       </Box>
       <Box>
         <TaskDialog
-          taskToEdit={taskToEdit}
           open={isDialogOpen}
           onClose={handleCloseDialog}
           onSave={handleSaveTask}
         />
       </Box>
       <Box>
-        <TaskRepresentation
-          handleEdit={setTaskToEdit}
-          openDialog={handleOpenDialog}
-        />
+        <TaskRepresentation openDialog={handleOpenDialog} />
         <Menu />
+      </Box>
+      <Box>
+        <br></br>
+        <MapComponent canPoint={false} setLocation={null} />
       </Box>
     </>
   );
